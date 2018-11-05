@@ -1,6 +1,7 @@
 # Environmental Dataset Description
 
 The dataset contains environmental measurements (PM10/PM2.5) that were published in environmental data portals including openAQ and luftdaten.info. The dataset contains information such as the exact geolocation to which the measurements refer, the time stamp and the air pollutant. The data concerns measurements from stations across the whole Europe.
+
 The dataset can be used as ground truth annotations for the development of air quality estimation models using supervised learning techniques. 
 
 The collection period extends from 1 October 2018 till 1 November 2018 and the number of records is 6,223,421.
