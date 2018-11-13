@@ -51,8 +51,6 @@ An idiosyncrasy of the Flickr API that should be considered is that whenever the
 <a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a comprehensive and well-documented free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) *orderby* and b) *limit*. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
 
 
-
-
 ## Image analysis for sky detection and localization
 Image Analysis (IA) involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. IA accepts a HTTP post request, carries out image processing, and returns a JSON with the results of the analysis. The service accepts as input either a set of local paths of images already downloaded (by image collectors Flickr or webcams) or a set of image URLs. 
 
@@ -62,44 +60,17 @@ The IA service consists of 3 components:
  - ratio computation
 
 ### Concept detection
-In the employed framework, we train a 22-layer GoogLeNet [41] network on 5055
-concepts, which are a subset of the 12,988 ImageNet concepts. Then, this network
-is applied on the TRECVID SIN 2013 development dataset and the output of the
-last fully-connected layer (5055 dimensions) is used as the input space of SVM
-classiers trained on the 346 TRECVID SIN concepts. Among these classiers, we
-use the one trained on the sky concept.
-In order to evaluate the accuracy of the employed sky detection framework,
-we manually annotated (for the sky concept) 23,000 Instagram images (collected
-during preliminary past data collection activities) that were captured in the city of
-Berlin during the time period between 01/01/2016 to 15/04/2016. Sky detection
-was then applied on each image and the generated condence scores were recorded
-in order to facilitate the selection of a decision threshold that provides a good
-trade-o between precision and recall. Based on this analysis, we opted for a 0.6
-threshold (i.e. the sky concept is considered present if the condence score is 0.6)
-which led to 91.2% precision and 80.0% recall.
+A 22-layer GoogLeNet network on 5055 concepts, which are a subset of the 12,988 ImageNet concepts. Then, this network is applied on the TRECVID SIN 2013 development dataset and the output of the last fully-connected layer (5055 dimensions) is used as the input space of SVM classifiers trained on the 346 TRECVID SIN concepts. The Concept Detection (CD) considered only the sky concept.
+
+In oSky detection was then applied on each image and the generated confidence scores were recorded in order to facilitate the selection of a decision threshold that provides a good trade-off between precision and recall. Based on this analysis, we opted for a 0.6 threshold (i.e. the sky concept is considered present if the confidence score is 0.6).
 
 
-
-Sky localization is an important computer vision problem which refers to the
-detection of all pixels that depict sky in an image. In this section, we rst present
-the state of the art in sky localization (section 5.2.1) and then describe the adopted
-sky localization approach which consists of the fusion of two diverse approaches,
-a deep learning-based one (section 5.2.2) and one based on a set of heuristic rules
-(section 5.2.3), that were found to work in a complementary manner (section 5.2.4).
-
-5.2.2 FCN for sky localization
-In the proposed framework, we employ the fully convolutional network (FCN) ap-
-proach [22], which draws on recent successes of deep neural networks for image
-classication (e.g. [19]) and transfer learning. Transfer learning was rst demon-
-strated on various visual recognition tasks (e.g. [7]), then on detection, and on
-both instance and semantic segmentation in hybrid proposal classier models [11{
-13]. The work in [22] was the rst to adapt deep classication architectures for
+### Sky localization
+Sky localization refers to the detection of all pixels that depict sky in an image. We emply a fully convolutional network (FCN) approach, which draws on recent successes of deep neural networks for image
+classication (e.g. [19]) and transfer learning. The work in [22] was the rst to adapt deep classication architectures for
 image segmentation by using networks pre-trained for image classication and
 ne-tuned fully convolutionally on whole image inputs and per pixel ground truth
-labels. Importantly, it was shown [22] that the FCN approach achieves state-of-
-the-art segmentation performance in a number of standard benchmarks, including
-the SIFT Flow dataset where the FCN-16 variant achieved a pixel precision of
-94.3% on the set of geometric classes, which include sky.
+labels. 
 To measure the performance of the approach specically on the task of sky
 localization, we used the SUN Database19 [43], a comprehensive collection of an-
 notated images covering a large variety of environmental scenes, places and the ob-
@@ -111,25 +82,24 @@ we are interested mainly in the precision of the approach given that what is re-
 quired by the air quality estimation approach presented in section 6 is recognizing
 accurately even a small part of the sky inside the image.
 
-5.2.3 Sky localization using heuristic rules
+### Sky localization using heuristic rules
 The second approach for sky localization is based on heuristic rules that aim at
 recognizing the sky part of the images. The algorithm is based on identifying
 whether the pixels meet certain criteria involving their color values and the size
 of color clusters they belong to. The output of the algorithm is a mask containing
-all pixels that capture the sky. Fig. 4 presents the pseudocode of the proposed
-method. It should be noted that the heuristic algorithm is far stricter than the
+all pixels that capture the sky. It should be noted that the heuristic algorithm is far stricter than the
 FCN-based since sun and clouds are not considered part of the sky. Similarly to the
 FCN-based, the heuristic rule-based method was evaluated on the SUN database
 obtaining a mean precision of 82.45% and a mean recall of 59.22%.
 
 When an IA request is received, the IA service
 first sends a request to the concept detection (CD) component (step 1) which implements the concept detection
-framework described in D3.1. The CD component applies concept detection on each image of the request and returns
+framework. The CD component applies concept detection on each image of the request and returns
 a set of scores that represent the algorithm’s confidence that the sky concept appears in each image. When a response
 is received by the CD component, the IA service parses it to check which images are the most likely to depict sky based
-on the confidence scores calculated by the CD component (step 2). A relatively high (0.8) threshold is used to lower
+on the confidence scores calculated by the CD component. A relatively high (0.8) threshold is used to lower
 the probability of sending non-sky-depicting images for subsequent analysis. At step 3, the IA service sends a request
-to the sky localization (SL) component which implements the FCN-based sky localization framework described in D3.1.
+to the sky localization (SL) component which implements the FCN-based sky localization framework.
 This is a computationally heavy processing step that is carried out on the GPU of the IA server. The response of the SL
 component is the sky mask of each image of the request. To minimize the time required for sending the masks to the
 IA service, a compression algorithm is first applied to reduce the size of the masks. Then, the IA service receives the
