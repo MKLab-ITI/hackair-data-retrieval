@@ -1,8 +1,6 @@
 # hackair-data-retrieval
 Contains components for air quality data collection, image collection from Flickr and web cams, and image analysis for sky detection and localization.
 
-Contains components for air quality data collection, image collection from Flickr and web cams, and image analysis for sky detection and localization.
-
 ## Air quality data collector from open sources
 
 Two sources are involved: a) OpenAQ  platform and b) Luftdaten. The measurements from both sources are stored in a MongoDB.
@@ -20,21 +18,26 @@ The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used,
 ### Luftdaten
 
 #### Description
-Luftdaten (http://luftdaten.info/) is another source of air quality measurements. It offers data coming from  from low-cost sensors. The Luftdaten API can be accessed by following the instruction in https://github.com/opendata-stuttgart/meta/wiki/APIs.
+<a href="http://luftdaten.info/" target="_blank">Luftdaten</a> is another source of air quality measurements. It offers data coming from  from low-cost sensors. The Luftdaten API can be accessed by following the instruction in https://github.com/opendata-stuttgart/meta/wiki/APIs.
 
 The data are organized by the OK Lab Stuttgart which is dedicated to the fine dust measurement through the Citizen Science project luftdaten.info. The measurements are provided by citizens that install self-built sensors on the outside their home. Then, Luftdaten.info generates a continuously updated particular matter map from the transmitted data.
 
 
 ## Image collection from Flickr and web cams
 
- - The Flickr collector retrieves the URLs and necessary metadata of images captured and recently (within the last 24 hours) around the locations of interest. This information is retrieved by periodically calling the Flickr API. The metadata of each image is stored in a MongoDB and the URLs are used to download the images and store them until image analysis for supporting air quality estimation is performed.
+### Flickr collector
+
+#### Description
+The Flickr collector retrieves the URLs and necessary metadata of images captured and recently (within the last 24 hours) around the locations of interest. This information is retrieved by periodically calling the Flickr API. The metadata of each image is stored in a MongoDB and the URLs are used to download the images and store them until image analysis for supporting air quality estimation is performed.
 
 In order to collect images the flickr.photos.search endpoint was used. For determining the geographical coverage of the query the *woe_id* parameter was used. This parameter allows geographical queries based on a WOEID (Where on Earth Identifier), a 32-bit identifier that uniquely identifies spatial entities and is assigned by Flickr to all geotagged images. Furthermore, in order to retrieve only photos taken within the last 24 hours, the *min/max_date_taken* parameters of the *flickr.photos.search* endpoint are used. These parameters operate on Flickr’s ‘taken’ date field which is extracted, if available, from the image’s Exif metadata. However, the value of this field is not always accurate as explained in Flickr API’s documentation.
  
 An idiosyncrasy of the Flickr API that should be considered is that whenever the number of results for any given search query is larger than 4,000, only the pages corresponding to the first 4,000 results will contain unique images and subsequent pages will contain duplicates of the first 4,000 results. To tackle this issue, a recursive algorithm was implemented, that splits the query’s date taken interval in two or more and creates new queries that are submitted to the API. This mechanism offers robustness against data bursts.
 
+### Webcams collector
 
- - Webcams.travel (https://developers.webcams.travel/) is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a comprehensive and well-documented free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via Mashape (https://www.mashape.com/). The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the /webcams/list/ and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) orderby and b) limit. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
+#### Description
+<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a comprehensive and well-documented free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/ target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) orderby and b) limit. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
 
 
 
