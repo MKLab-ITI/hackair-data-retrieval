@@ -14,6 +14,12 @@ The OpenAQ system checks each data source for updates information every 10 minut
 
 The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used, which provides the latest value of each available parameter (pollutant, i.e. NO2, PM10, PM2.5, SO2, CO, O3, BC) for every location in the system. The service receives as parameters, the pollutant and the region (which can be defined either as country name, city or by using coordinates)
 
+#### Instructions
+1. Install Java EE 7 and GlassFish 4.1.1 in your computer.
+2. Clone the project locally in your computer.
+3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
+4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
+
 ### Luftdaten
 
 #### Description
@@ -21,6 +27,11 @@ The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used,
 
 The data are organized by the OK Lab Stuttgart which is dedicated to the fine dust measurement through the Citizen Science project luftdaten.info. The measurements are provided by citizens that install self-built sensors on the outside their home. Then, Luftdaten.info generates a continuously updated particular matter map from the transmitted data.
 
+#### Instructions
+1. Install Java EE 7 and GlassFish 4.1.1 in your computer.
+2. Clone the project locally in your computer.
+3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
+4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
 
 ## Image collection from Flickr and web cams
 Two sources are involved: a) Flickr and b) Webcams-travel. The metadata from both sources are stored in a MongoDB.
@@ -43,13 +54,14 @@ An idiosyncrasy of the Flickr API that should be considered is that whenever the
 
 
 ## Image analysis for sky detection and localization
-Image Analysis (IA) involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. The service accepts, carries out all the required processing, and responds with the results of the image analysis. The service accepts HTTP post requests that specify either a set of local (to the server that runs the service) paths that correspond to images already downloaded on the server through one of the image collectors (Flickr or webcams) or a set of image URLs. 
+Image Analysis (IA) involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. IA accepts a HTTP post request, carries out image processing, and returns a JSON with the results of the analysis. The service accepts as input either a set of local paths of images already downloaded (by image collectors Flickr or webcams) or a set of image URLs. 
 
-The IA service consists of 3 components
+The IA service consists of 3 components:
  - concept detection
  - sky localization
  - ratio computation
 
+### Concept detection
 In the employed framework, we train a 22-layer GoogLeNet [41] network on 5055
 concepts, which are a subset of the 12,988 ImageNet concepts. Then, this network
 is applied on the TRECVID SIN 2013 development dataset and the output of the
@@ -75,26 +87,6 @@ sky localization approach which consists of the fusion of two diverse approaches
 a deep learning-based one (section 5.2.2) and one based on a set of heuristic rules
 (section 5.2.3), that were found to work in a complementary manner (section 5.2.4).
 
-5.2.1 State of the art
-An approach that was proposed by [47] suggests measuring the sky border points.
-The authors propose several modications of the original sky border position func-
-tion, namely the determination of multi-border points for detecting complex sky
-regions in images. In [16], the authors suggest using blue color for localizing and
-tracking RGB color in dierent applications of image processing. Specically, they
-propose a pixel based solution utilizing the sky color information. The success of
-deep networks on several domains led to their application in semantic segmenta-
-tion as well. Specically, several recent works have applied Convolutional Neural
-Networks (CNNs) to dense prediction problems, including semantic segmentation
-such as [26, 8, 29]; boundary prediction for electron microscopy by Ciresan et al. [6]
-and for natural images by a hybrid convnet/nearest neighbor model by Ganin and
-Lempitsky [9]. Moreover, Hariharan et al. [13] and Gupta et al. [12] adapt deep
-CNNs to semantic segmentation, but do so in hybrid detection-segmentation mod-
-els. These approaches ne-tune a Regional-CNN system [11] by sampling bounding
-boxes and/or region proposals for detection, semantic segmentation, and instance
-Towards improved air quality monitoring using publicly available sky images 11
-segmentation. Finally, fully convolutional training is rare, but was used eectively
-by Tompson et al. [42] to learn an end-to-end part detector and spatial model for
-pose estimation.
 5.2.2 FCN for sky localization
 In the proposed framework, we employ the fully convolutional network (FCN) ap-
 proach [22], which draws on recent successes of deep neural networks for image
@@ -118,6 +110,7 @@ a pixel precision of 91.77% and a pixel recall of 94.25%. It should be noted, th
 we are interested mainly in the precision of the approach given that what is re-
 quired by the air quality estimation approach presented in section 6 is recognizing
 accurately even a small part of the sky inside the image.
+
 5.2.3 Sky localization using heuristic rules
 The second approach for sky localization is based on heuristic rules that aim at
 recognizing the sky part of the images. The algorithm is based on identifying
@@ -235,19 +228,6 @@ The hackAIR DS API is implemented in [Java EE 7](https://docs.oracle.com/javaee/
 2. Clone the project locally in your computer.
 3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
 4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
-
-or
-
-1. Install Java EE 7 and a common Java IDE framework.
-2. Clone the project locally in your computer.
-3. Import the java project to the workspace of the IDE framework.
-4. Set up a Glassfish server from the IDE environment to run locally.
-5. Run the project through the IDE utilities.
-6. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
-
-
-## Resources
-The official hackAIR ontology resources are available [here](https://mklab.iti.gr/results/hackair-ontologies/).
 
 
 ## Citation
