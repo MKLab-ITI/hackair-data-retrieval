@@ -13,6 +13,36 @@ The OpenAQ system checks each data source for updates information every 10 minut
 
 The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used, which provides the latest value of each available parameter (pollutant, i.e. NO2, PM10, PM2.5, SO2, CO, O3, BC) for every location in the system. The service receives as parameters, the pollutant and the region (which can be defined either as country name, city or by using coordinates)
 
+### Luftdaten
+
+#### Description
+<a href="http://luftdaten.info/" target="_blank">Luftdaten</a> is another source of air quality measurements. It offers data coming from  from low-cost sensors. The Luftdaten API can be accessed by following the instruction in https://github.com/opendata-stuttgart/meta/wiki/APIs.
+
+The data are organized by the OK Lab Stuttgart which is dedicated to the fine dust measurement through the Citizen Science project luftdaten.info. The measurements are provided by citizens that install self-built sensors on the outside their home. Then, Luftdaten.info generates a continuously updated particular matter map from the transmitted data.
+
+#### Instructions
+1. Install Java RE 7+ and Mongo 3.x in your computer.
+2. Clone the project locally in your computer.
+3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
+4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
+
+## Image collection from Flickr and web cams
+Two sources are involved: a) Flickr and b) Webcams-travel. The metadata from both sources are stored in a MongoDB.
+
+### Flickr collector
+
+#### Description
+The Flickr collector retrieves the URLs and necessary metadata of images captured and recently (within the last 24 hours) around the locations of interest. This information is retrieved by periodically calling the Flickr API. The metadata of each image is stored in a MongoDB and the URLs are used to download the images and store them until image analysis for supporting air quality estimation is performed.
+
+In order to collect images the *flickr.photos.search* endpoint was used. For determining the geographical coverage of the query the *woe_id* parameter was used. This parameter allows geographical queries based on a WOEID (Where on Earth Identifier), a 32-bit identifier that uniquely identifies spatial entities and is assigned by Flickr to all geotagged images. Furthermore, in order to retrieve only photos taken within the last 24 hours, the *min/max_date_taken* parameters are used, which operate on Flickr’s ‘taken’ date field. It should be noted that the value of this field is not always accurate as explained in Flickr API’s documentation.
+ 
+An idiosyncrasy of the Flickr API that should be considered is that whenever the number of results for any given search query is larger than 4,000, only the pages corresponding to the first 4,000 results will contain unique images and subsequent pages will contain duplicates of the first 4,000 results. To tackle this issue, a recursive algorithm was implemented, that splits the query’s date taken interval in two or more and creates new queries that are submitted to the API. This mechanism offers robustness against data bursts.
+
+### Webcams collector
+
+#### Description
+<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) *orderby* and b) *limit*. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
+
 ### JSON parameters
 ```
 {
@@ -45,53 +75,18 @@ The hackAIR DS API is implemented in [Java EE 7](https://docs.oracle.com/javaee/
 * [SPIN API](http://topbraid.org/spin/api/): an open source Java API to enable the adoption of SPIN rules and the handling of the implemented rule-based reasoning mechanism. 
 * [GlassFish Server 4.1.1](http://www.oracle.com/technetwork/middleware/glassfish/overview/index.html): an open-source application server for the Java EE platform, utilised for handling HTTP queries to the RESTful API.
 * [json-simple](https://github.com/fangyidong/json-simple): a well-known java toolkit for parsing (encoding/decoding) JSON text.
-* [hackAIR Knowledge Base (KB) and Reasoning Framework](https://mklab.iti.gr/results/hackair-ontologies/): this regards the implemented ontological representation of the domain of discourse that handles both the semantic integration and reasoning of environmental and user-specific data, in order to provide recommendations to the hackAIR users, with respect to: (i) personal health and user preferences (activities, daily routine, etc.), and (ii) current AQ conditions of the location of interest. The hackAIR DS module utilises the sources of the hackAIR KB and reasoning framework as a background resource of information, from which it acquires the necessary semantic relations and information in order to support relevant recommendations’ provision to the users upon request for decision support. 
 
 
 #### Instructions
 1. Install Java RE 7+ and Mongo 3.x in your computer.
-2. Clone the project locally in your computer.
-3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
+2. Clone the project **hackAIRDataCollectors** locally in your computer.
+3. Edit the mongosetting.jRun Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
 4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
 
 ●	Compiled jar and auxiliary files: [hackair_root]/hackair_modules/collectors/openaq
-●	Currently running at REM (C:/hackair/openaq collector)
 How to run
 ●	Run the openAQCollector.jar, with a crawl settings file as command line argument. Examples are provided in [hackair_root]/hackair_modules/collectors/openaq
 
-# hackAIR Decision Support API
-
-The involved web-services were created with the adoption of state-of-the-art technologies: RESTful communication, exchange of information on the basis of JSON objects, etc. The hackAIR DS API is publicly available and may run both as an independent service or as an integrated service on the hackAIR app/platform. 
-
-### Luftdaten
-
-#### Description
-<a href="http://luftdaten.info/" target="_blank">Luftdaten</a> is another source of air quality measurements. It offers data coming from  from low-cost sensors. The Luftdaten API can be accessed by following the instruction in https://github.com/opendata-stuttgart/meta/wiki/APIs.
-
-The data are organized by the OK Lab Stuttgart which is dedicated to the fine dust measurement through the Citizen Science project luftdaten.info. The measurements are provided by citizens that install self-built sensors on the outside their home. Then, Luftdaten.info generates a continuously updated particular matter map from the transmitted data.
-
-#### Instructions
-1. Install Java RE 7+ and Mongo 3.x in your computer.
-2. Clone the project locally in your computer.
-3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
-4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
-
-## Image collection from Flickr and web cams
-Two sources are involved: a) Flickr and b) Webcams-travel. The metadata from both sources are stored in a MongoDB.
-
-### Flickr collector
-
-#### Description
-The Flickr collector retrieves the URLs and necessary metadata of images captured and recently (within the last 24 hours) around the locations of interest. This information is retrieved by periodically calling the Flickr API. The metadata of each image is stored in a MongoDB and the URLs are used to download the images and store them until image analysis for supporting air quality estimation is performed.
-
-In order to collect images the *flickr.photos.search* endpoint was used. For determining the geographical coverage of the query the *woe_id* parameter was used. This parameter allows geographical queries based on a WOEID (Where on Earth Identifier), a 32-bit identifier that uniquely identifies spatial entities and is assigned by Flickr to all geotagged images. Furthermore, in order to retrieve only photos taken within the last 24 hours, the *min/max_date_taken* parameters are used, which operate on Flickr’s ‘taken’ date field. It should be noted that the value of this field is not always accurate as explained in Flickr API’s documentation.
- 
-An idiosyncrasy of the Flickr API that should be considered is that whenever the number of results for any given search query is larger than 4,000, only the pages corresponding to the first 4,000 results will contain unique images and subsequent pages will contain duplicates of the first 4,000 results. To tackle this issue, a recursive algorithm was implemented, that splits the query’s date taken interval in two or more and creates new queries that are submitted to the API. This mechanism offers robustness against data bursts.
-
-### Webcams collector
-
-#### Description
-<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) *orderby* and b) *limit*. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
 
 mongosettings.json
 ```
@@ -109,6 +104,9 @@ mongosettings.json
    ]
 }
 ```
+
+
+The involved web-services were created with the adoption of state-of-the-art technologies: RESTful communication, exchange of information on the basis of JSON objects, etc. The hackAIR DS API is publicly available and may run both as an independent service or as an integrated service on the hackAIR app/platform. 
 
 ## Image analysis for sky detection and localization
 Image Analysis (IA) involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. IA accepts a HTTP post request, carries out image processing, and returns a JSON with the results of the analysis. The service accepts as input either a set of local paths of images already downloaded (by image collectors Flickr or webcams) or a set of image URLs. 
@@ -132,14 +130,7 @@ The SL component is a computationally heavy processing step that can is suggeste
 ### Ratio Computation
 The Ration Computation module considers heuristic rules that aim at refining the sky part of the images. The algorithm uses certain criteria involving the pixel color values and the size of color clusters in order to refine the sky mask. The output of the algorithm is a mask containing all pixels that capture the sky and the mean R/G and G/B ratios of the sky part of the images. It should be noted that the heuristic algorithm is rather strict and does not consider clouds as part of the sky. 
 
-When an IA request is received, the IA service
-first sends a request to the concept detection (CD) component (step 1) which implements the concept detection
-framework. The CD component applies concept detection on each image of the request and returns
-a set of scores that represent the algorithm’s confidence that the sky concept appears in each image. When a response
-is received by the CD component, the IA service parses it to check which images are the most likely to depict sky based
-on the confidence scores calculated by the CD component. Then, the IA service receives the
-response from the SL component (step 4) and sends a request to the ratio computation (RC) component. The
-RC component takes the sky masks computed by the FCN approach as input, refines them by applying the heuristic
+When an IA request is received, the IA service first sends a request to the concept detection (CD) component (step 1) which implements the concept detection framework. The CD component applies concept detection on each image of the request and returns a set of scores that represent the algorithm’s confidence that the sky concept appears in each image. When a response is received by the CD component, the IA service parses it to check which images are the most likely to depict sky based on the confidence scores calculated by the CD component. Then, the IA service receives the response from the SL component (step 4) and sends a request to the ratio computation (RC) component. The RC component takes the sky masks computed by the FCN approach as input, refines them by applying the heuristic
 approach on top of them and computes the R/G and G/B ratios of each image (in case all checks of
 the heuristic approach are successfully passed). Finally, the IA service parses the response of the RC component (step
 6) and combines the results of all processing steps to synthesize the IA response.
