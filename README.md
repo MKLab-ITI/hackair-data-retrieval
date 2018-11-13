@@ -232,11 +232,11 @@ The hackAIR DS API is implemented in [Java EE 7](https://docs.oracle.com/javaee/
 
 
 ## Citation
-Riga M., Kontopoulos E., Karatzas K., Vrochidis S. and Kompatsiaris I. (2018), An Ontology-based Decision Support Framework for Personalised Quality of Life Recommendations. In: Dargam F., Delias P., Linden I., Mareschal B. (eds) Decision Support Systems VIII: Sustainable Data-Driven and Evidence-Based Decision Support. 4th International Conference on Decision Support System Technology (ICDSST 2018). Lecture Notes in Business Information Processing (LNBIP), Volume 313, Springer, Cham. doi: [https://doi.org/10.1007/978-3-319-90315-6_4](https://doi.org/10.1007/978-3-319-90315-6_4).
+E. Spyromitros-Xioufs, A. Moumtzidou, S. Papadopoulos, S. Vrochidis, Y. Kompatsiaris, A. K. Georgoulias, G. Alexandri, K. Kourtidis, “Towards improved air quality monitoring using publicly available sky images”, In Multimedia Technologies for Environmental & Biodiversity Informatics, 2018. 
 
 
 ## Contact
-For further details, please contact Marina Riga (mriga@iti.gr)
+For further details, please contact Anastasia Moumtzidou (moumtzid@iti.gr)
 
 
 ## Credits
