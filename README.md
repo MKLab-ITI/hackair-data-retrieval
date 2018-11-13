@@ -41,7 +41,7 @@ The first is common for all collectors and is used for defining the MongoDB para
 Below, we specify all parameters of both files and provide an example of the *crawlsettings.json*.
 
 Parameter | Explanation
-:--- | :---:
+:--- | :---
 `username` | MongoDB username *string* value
 `password` | MongoDB password *string* value
 `host` | *string* with the IP of the computer or the *localhost* value
