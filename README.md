@@ -4,7 +4,6 @@ Contains components for air quality data collection, image collection from Flick
 ## Air quality data collector from open sources
 Two sources are involved: a) OpenAQ  platform and b) Luftdaten. The measurements from both sources are stored in a MongoDB.
 
-
 ### OpenAQ
 
 #### Description
@@ -13,6 +12,41 @@ Two sources are involved: a) OpenAQ  platform and b) Luftdaten. The measurements
 The OpenAQ system checks each data source for updates information every 10 minutes. In most cases, the data source is the European Environmental Agency (EEA) but additional official-level data sources are included (e.g. DEFRA in the United Kingdom).  
 
 The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used, which provides the latest value of each available parameter (pollutant, i.e. NO2, PM10, PM2.5, SO2, CO, O3, BC) for every location in the system. The service receives as parameters, the pollutant and the region (which can be defined either as country name, city or by using coordinates)
+
+### JSON parameters
+```
+{
+	"crawl_settings": [
+		{
+		"mongoSettingsFile": "mongosettings.json",
+		"crawlStartString": "",
+		"crawlEndString": "",
+		"crawlIntervalSecs": 10800,
+		"verbose": true
+		}
+	]
+}
+```
+
+Below, we specify all the mandatory and optional JSON parameters that are accepted in the POST request:
+
+Parameter | JSON Type | Mandatory(M) / Optional(O) | Accepted values
+:--- | :---: | :---: | :---
+`mongoSettingsFile` | object | any *string* value
+`crawlStartString` | object | One of the following: *male*, *female*, *other*
+`crawlEndString` | object | any *integer* value
+`crawlIntervalSecs` | object | any *string* value
+`verbose` | object | M | any *string* value
+
+
+## Requirements - Dependencies
+The hackAIR DS API is implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html) with the adoption of [JAX-RS](http://docs.oracle.com/javaee/6/api/javax/ws/rs/package-summary.html) library. Additional dependencies are listed below:
+* [Apache Jena](https://jena.apache.org/): a free and open-source Java framework for building Semantic Web and Linked Data applications.
+* [SPIN API](http://topbraid.org/spin/api/): an open source Java API to enable the adoption of SPIN rules and the handling of the implemented rule-based reasoning mechanism. 
+* [GlassFish Server 4.1.1](http://www.oracle.com/technetwork/middleware/glassfish/overview/index.html): an open-source application server for the Java EE platform, utilised for handling HTTP queries to the RESTful API.
+* [json-simple](https://github.com/fangyidong/json-simple): a well-known java toolkit for parsing (encoding/decoding) JSON text.
+* [hackAIR Knowledge Base (KB) and Reasoning Framework](https://mklab.iti.gr/results/hackair-ontologies/): this regards the implemented ontological representation of the domain of discourse that handles both the semantic integration and reasoning of environmental and user-specific data, in order to provide recommendations to the hackAIR users, with respect to: (i) personal health and user preferences (activities, daily routine, etc.), and (ii) current AQ conditions of the location of interest. The hackAIR DS module utilises the sources of the hackAIR KB and reasoning framework as a background resource of information, from which it acquires the necessary semantic relations and information in order to support relevant recommendations’ provision to the users upon request for decision support. 
+
 
 #### Instructions
 1. Install Java RE 7+ and Mongo 3.x in your computer.
@@ -25,6 +59,9 @@ The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used,
 How to run
 ●	Run the openAQCollector.jar, with a crawl settings file as command line argument. Examples are provided in [hackair_root]/hackair_modules/collectors/openaq
 
+# hackAIR Decision Support API
+
+The involved web-services were created with the adoption of state-of-the-art technologies: RESTful communication, exchange of information on the basis of JSON objects, etc. The hackAIR DS API is publicly available and may run both as an independent service or as an integrated service on the hackAIR app/platform. 
 
 ### Luftdaten
 
@@ -56,6 +93,22 @@ An idiosyncrasy of the Flickr API that should be considered is that whenever the
 #### Description
 <a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) *orderby* and b) *limit*. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
 
+mongosettings.json
+```
+{  
+   "mongo_settings":[  
+      {  
+         "username":"hackairdb",
+         "password":"7gG&8<HAZ",
+         "host":"",
+         "port":27017,
+         "authMechanism":"SCRAM-SHA-1",
+         "databaseName":"hackair",
+         "collectionName":"sensors"
+      }
+   ]
+}
+```
 
 ## Image analysis for sky detection and localization
 Image Analysis (IA) involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. IA accepts a HTTP post request, carries out image processing, and returns a JSON with the results of the analysis. The service accepts as input either a set of local paths of images already downloaded (by image collectors Flickr or webcams) or a set of image URLs. 
