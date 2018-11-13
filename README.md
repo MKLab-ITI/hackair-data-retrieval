@@ -11,7 +11,7 @@ Two sources are involved: a) OpenAQ  platform and b) Luftdaten. The measurements
 ### OpenAQ
 
 #### Description
-OpenAQ (https://openaq.org/) is an open data platform that aggregates and shares air quality data from multiple official sources around the world. The data offered by the platform is of high quality as they mainly come from official, usually government-level organizations. The platform offers the data as they are received from their originating sources, without performing any kind of transformations. 
+<a href="https://openaq.org/" target="_blank">OpenAQ</a> is an open data platform that aggregates and shares air quality data from multiple official sources around the world. The data offered by the platform is of high quality as they mainly come from official, usually government-level organizations. The platform offers the data as they are received from their originating sources, without performing any kind of transformations. 
 
 The OpenAQ system checks each data source for updates information every 10 minutes. In most cases, the data source is the European Environmental Agency (EEA) but additional official-level data sources are included (e.g. DEFRA in the United Kingdom).  
 
