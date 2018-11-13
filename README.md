@@ -40,6 +40,8 @@ The first is common for all collectors and is used for defining the MongoDB para
 
 Below, we specify all parameters of both files and provide 2 indicative examples.
 
+The parameters and what they represent in *mongosettings.json*.
+
 Parameter | Explanation
 :--- | :---
 `username` | MongoDB username *string* value
@@ -51,6 +53,7 @@ Parameter | Explanation
 `collectionName` | *string* value of the collection name
 
 Example of *mongosettings.json*
+```
 {  
    "mongo_settings":[  
       {  
@@ -64,14 +67,17 @@ Example of *mongosettings.json*
       }
    ]
 }
+```
+
+The parameters and what they represent in *crawlsettings.json*.
 
 Parameter | Explanation
 :--- | :---
-`mongoSettingsFile` | MongoDB username *string* value
-`crawlStartString` | MongoDB password *string* value
-`crawlEndString` | *string* with the IP of the computer or the *localhost* value
-`crawlIntervalSecs` | *integer* value with the MongoDB port
-`verbose` | *string* value indicating the authentication mechanism, i.e. *MONGODB-CR*, *SCRAM-SHA-1* or *""* if none is used
+`mongoSettingsFile` | *string* value indicating the name of the json file with the MongoDB settings
+`crawlStartString` | *string* value setting the crawl start date with the following format "dd-MM-yyyy HH:mm:ss"
+`crawlEndString` | *string* value setting the crawl end date with the following format 
+`crawlIntervalSecs` | *integer* value indating the interval in seconds between two crawling procedures. The procedure does not end.
+`verbose` | *boolean* value indicating whether the output is written
 
 Example of *crawlsettings.json*
 ```
@@ -88,22 +94,11 @@ Example of *crawlsettings.json*
 }
 ```
 
-Below, we specify all the mandatory and optional JSON parameters that are accepted in the POST request:
-
-Parameter | JSON Type | Mandatory(M) / Optional(O) | Accepted values
-:--- | :---: | :---: | :---
-`mongoSettingsFile` | object | any *string* value
-`crawlStartString` | object | One of the following: *male*, *female*, *other*
-`crawlEndString` | object | any *integer* value
-`crawlIntervalSecs` | object | any *string* value
-`verbose` | object | M | any *string* value
-
 
 ## Requirements - Dependencies
 The hackAIR DS API is implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html) with the adoption of [JAX-RS](http://docs.oracle.com/javaee/6/api/javax/ws/rs/package-summary.html) library. Additional dependencies are listed below:
 * [Apache Jena](https://jena.apache.org/): a free and open-source Java framework for building Semantic Web and Linked Data applications.
 * [SPIN API](http://topbraid.org/spin/api/): an open source Java API to enable the adoption of SPIN rules and the handling of the implemented rule-based reasoning mechanism. 
-* [GlassFish Server 4.1.1](http://www.oracle.com/technetwork/middleware/glassfish/overview/index.html): an open-source application server for the Java EE platform, utilised for handling HTTP queries to the RESTful API.
 * [json-simple](https://github.com/fangyidong/json-simple): a well-known java toolkit for parsing (encoding/decoding) JSON text.
 
 
@@ -111,29 +106,11 @@ The hackAIR DS API is implemented in [Java EE 7](https://docs.oracle.com/javaee/
 1. Install Java RE 7+ and Mongo 3.x in your computer.
 2. Clone the project **hackAIRDataCollectors** locally in your computer.
 3. Edit the mongosetting.jRun Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
-4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
 
 ●	Compiled jar and auxiliary files: [hackair_root]/hackair_modules/collectors/openaq
 How to run
 ●	Run the openAQCollector.jar, with a crawl settings file as command line argument. Examples are provided in [hackair_root]/hackair_modules/collectors/openaq
 
-
-mongosettings.json
-```
-{  
-   "mongo_settings":[  
-      {  
-         "username":"hackairdb",
-         "password":"7gG&8<HAZ",
-         "host":"",
-         "port":27017,
-         "authMechanism":"SCRAM-SHA-1",
-         "databaseName":"hackair",
-         "collectionName":"sensors"
-      }
-   ]
-}
-```
 
 
 ## Image analysis for sky detection and localization
