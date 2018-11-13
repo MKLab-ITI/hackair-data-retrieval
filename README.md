@@ -2,7 +2,6 @@
 Contains components for air quality data collection, image collection from Flickr and web cams, and image analysis for sky detection and localization.
 
 ## Air quality data collector from open sources
-
 Two sources are involved: a) OpenAQ  platform and b) Luftdaten. The measurements from both sources are stored in a MongoDB.
 
 
@@ -24,6 +23,7 @@ The data are organized by the OK Lab Stuttgart which is dedicated to the fine du
 
 
 ## Image collection from Flickr and web cams
+Two sources are involved: a) Flickr and b) Webcams-travel. The metadata from both sources are stored in a MongoDB.
 
 ### Flickr collector
 
@@ -37,20 +37,99 @@ An idiosyncrasy of the Flickr API that should be considered is that whenever the
 ### Webcams collector
 
 #### Description
-<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a comprehensive and well-documented free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/ target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) orderby and b) limit. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
+<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a comprehensive and well-documented free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) *orderby* and b) *limit*. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
 
 
 
 
 ## Image analysis for sky detection and localization
-Image Analysis involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. The service accepts, carries out all the required processing, and responds with the results of the image analysis. The service accepts HTTP post requests that specify either a
-set of local (to the server that runs the service) paths that correspond to images already downloaded on the server
-through one of the image collectors (Flickr or webcams) or a set of image URLs36. 
+Image Analysis (IA) involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. The service accepts, carries out all the required processing, and responds with the results of the image analysis. The service accepts HTTP post requests that specify either a set of local (to the server that runs the service) paths that correspond to images already downloaded on the server through one of the image collectors (Flickr or webcams) or a set of image URLs. 
 
-In the latter case, all images are first
-downloaded (using a multi-threaded image download implementation).
-The IA service uses internally three components, each one implementing a processing step of the image analysis
-pipeline, i.e. concept detection, sky localization and ratio computation. When an IA request is received, the IA service
+The IA service consists of 3 components
+ - concept detection
+ - sky localization
+ - ratio computation
+
+In the employed framework, we train a 22-layer GoogLeNet [41] network on 5055
+concepts, which are a subset of the 12,988 ImageNet concepts. Then, this network
+is applied on the TRECVID SIN 2013 development dataset and the output of the
+last fully-connected layer (5055 dimensions) is used as the input space of SVM
+classiers trained on the 346 TRECVID SIN concepts. Among these classiers, we
+use the one trained on the sky concept.
+In order to evaluate the accuracy of the employed sky detection framework,
+we manually annotated (for the sky concept) 23,000 Instagram images (collected
+during preliminary past data collection activities) that were captured in the city of
+Berlin during the time period between 01/01/2016 to 15/04/2016. Sky detection
+was then applied on each image and the generated condence scores were recorded
+in order to facilitate the selection of a decision threshold that provides a good
+trade-o between precision and recall. Based on this analysis, we opted for a 0.6
+threshold (i.e. the sky concept is considered present if the condence score is 0.6)
+which led to 91.2% precision and 80.0% recall.
+
+
+
+Sky localization is an important computer vision problem which refers to the
+detection of all pixels that depict sky in an image. In this section, we rst present
+the state of the art in sky localization (section 5.2.1) and then describe the adopted
+sky localization approach which consists of the fusion of two diverse approaches,
+a deep learning-based one (section 5.2.2) and one based on a set of heuristic rules
+(section 5.2.3), that were found to work in a complementary manner (section 5.2.4).
+
+5.2.1 State of the art
+An approach that was proposed by [47] suggests measuring the sky border points.
+The authors propose several modications of the original sky border position func-
+tion, namely the determination of multi-border points for detecting complex sky
+regions in images. In [16], the authors suggest using blue color for localizing and
+tracking RGB color in dierent applications of image processing. Specically, they
+propose a pixel based solution utilizing the sky color information. The success of
+deep networks on several domains led to their application in semantic segmenta-
+tion as well. Specically, several recent works have applied Convolutional Neural
+Networks (CNNs) to dense prediction problems, including semantic segmentation
+such as [26, 8, 29]; boundary prediction for electron microscopy by Ciresan et al. [6]
+and for natural images by a hybrid convnet/nearest neighbor model by Ganin and
+Lempitsky [9]. Moreover, Hariharan et al. [13] and Gupta et al. [12] adapt deep
+CNNs to semantic segmentation, but do so in hybrid detection-segmentation mod-
+els. These approaches ne-tune a Regional-CNN system [11] by sampling bounding
+boxes and/or region proposals for detection, semantic segmentation, and instance
+Towards improved air quality monitoring using publicly available sky images 11
+segmentation. Finally, fully convolutional training is rare, but was used eectively
+by Tompson et al. [42] to learn an end-to-end part detector and spatial model for
+pose estimation.
+5.2.2 FCN for sky localization
+In the proposed framework, we employ the fully convolutional network (FCN) ap-
+proach [22], which draws on recent successes of deep neural networks for image
+classication (e.g. [19]) and transfer learning. Transfer learning was rst demon-
+strated on various visual recognition tasks (e.g. [7]), then on detection, and on
+both instance and semantic segmentation in hybrid proposal classier models [11{
+13]. The work in [22] was the rst to adapt deep classication architectures for
+image segmentation by using networks pre-trained for image classication and
+ne-tuned fully convolutionally on whole image inputs and per pixel ground truth
+labels. Importantly, it was shown [22] that the FCN approach achieves state-of-
+the-art segmentation performance in a number of standard benchmarks, including
+the SIFT Flow dataset where the FCN-16 variant achieved a pixel precision of
+94.3% on the set of geometric classes, which include sky.
+To measure the performance of the approach specically on the task of sky
+localization, we used the SUN Database19 [43], a comprehensive collection of an-
+notated images covering a large variety of environmental scenes, places and the ob-
+jects within. More specically, we used the pre-trained (on the SIFT Flow dataset)
+FCN-16 model made available20 by [22], to predict the sky region of the 2,030 SUN
+images for which the polygons capturing the sky part are provided. We measured
+a pixel precision of 91.77% and a pixel recall of 94.25%. It should be noted, that
+we are interested mainly in the precision of the approach given that what is re-
+quired by the air quality estimation approach presented in section 6 is recognizing
+accurately even a small part of the sky inside the image.
+5.2.3 Sky localization using heuristic rules
+The second approach for sky localization is based on heuristic rules that aim at
+recognizing the sky part of the images. The algorithm is based on identifying
+whether the pixels meet certain criteria involving their color values and the size
+of color clusters they belong to. The output of the algorithm is a mask containing
+all pixels that capture the sky. Fig. 4 presents the pseudocode of the proposed
+method. It should be noted that the heuristic algorithm is far stricter than the
+FCN-based since sun and clouds are not considered part of the sky. Similarly to the
+FCN-based, the heuristic rule-based method was evaluated on the SUN database
+obtaining a mean precision of 82.45% and a mean recall of 59.22%.
+
+When an IA request is received, the IA service
 first sends a request to the concept detection (CD) component (step 1) which implements the concept detection
 framework described in D3.1. The CD component applies concept detection on each image of the request and returns
 a set of scores that represent the algorithm’s confidence that the sky concept appears in each image. When a response
@@ -61,11 +140,11 @@ to the sky localization (SL) component which implements the FCN-based sky locali
 This is a computationally heavy processing step that is carried out on the GPU of the IA server. The response of the SL
 component is the sky mask of each image of the request. To minimize the time required for sending the masks to the
 IA service, a compression algorithm is first applied to reduce the size of the masks. Then, the IA service receives the
-response from the SL component (step 4) and sends a request to the ratio computation (RC) component (step 5). The
+response from the SL component (step 4) and sends a request to the ratio computation (RC) component. The
 RC component takes the sky masks computed by the FCN approach as input, refines them by applying the heuristic
-approach on top of them (see section 3.1) and computes the R/G and G/B ratios of each image (in case all checks of
+approach on top of them and computes the R/G and G/B ratios of each image (in case all checks of
 the heuristic approach are successfully passed). Finally, the IA service parses the response of the RC component (step
-6) and combines the results of all processing steps to synthesize the IA response (step 7).
+6) and combines the results of all processing steps to synthesize the IA response.
 
 
 nohup python TF_detection_service.py > detection_log.txt 2>&1
@@ -75,22 +154,13 @@ nohup python TF_detection_service.py > detection_log.txt 2>&1
 
 # hackAIR Decision Support API
 
-
-## Description
-The hackAIR Decision Support (DS) API is a dedicated software responsible for: (i) the representation of a problem (request) for decision support in a formal, comprehensible and hackAIR-ontology-compatible way; (ii) the communication between the <a href="https://platform.hackair.eu/" target="_blank">hackAIR UI (app/platform)</a>, or even other third-party DS systems, and the <a href="https://mklab.iti.gr/results/hackair-ontologies/" target="_blank">ontology-based representation and reasoning knowledge base (KB)</a>, which supports the recommendation mechanism. The involved web-services were created with the adoption of state-of-the-art technologies: RESTful communication, exchange of information on the basis of JSON objects, etc. The hackAIR DS API is publicly available and may run both as an independent service or as an integrated service on the hackAIR app/platform. 
+The involved web-services were created with the adoption of state-of-the-art technologies: RESTful communication, exchange of information on the basis of JSON objects, etc. The hackAIR DS API is publicly available and may run both as an independent service or as an integrated service on the hackAIR app/platform. 
 
 
 ## Web-Services
 Up to now, the hackAIR DS API offers the following web services through POST requests:
 * _{BASE_URL}/hackAIR_project/api/dynamicPopulation_: performs the dynamic population of involved data (user profile and enviromnental data) in the hackAIR KB for further manipulation.
 * _{BASE_URL}/hackAIR_project/api/requestRecommendation_: performs a step-by-step process, i.e. (i) receives a JSON object in pre-defined format, through a POST request to the service of discourse, (ii) converts the JSON data to a hackAIR-compatible ontology-based problem description language for populating new instances (user profile details and environmental related data) in the knowledge base; (iii) triggers the hackAIR reasoning mechanism for handling the available data and rules and for inferencing new knowledge, i.e. provide relevant recommendations to the users. 
-
-
-### Key features 
-The hackAIR DS module supports:
-* Multi-threading requests (syncronized, i.e. first come first served). 
-* Combined user-profiles' (primary and secondary) requests for decision support.
-* Recommendation messages in three different languages: English, German and Norwegian
 
 
 ### JSON parameters
