@@ -47,7 +47,7 @@ Two sources are involved: a) Flickr and b) Webcams-travel. The metadata from bot
 #### Description
 The Flickr collector retrieves the URLs and necessary metadata of images captured and recently (within the last 24 hours) around the locations of interest. This information is retrieved by periodically calling the Flickr API. The metadata of each image is stored in a MongoDB and the URLs are used to download the images and store them until image analysis for supporting air quality estimation is performed.
 
-In order to collect images the flickr.photos.search endpoint was used. For determining the geographical coverage of the query the *woe_id* parameter was used. This parameter allows geographical queries based on a WOEID (Where on Earth Identifier), a 32-bit identifier that uniquely identifies spatial entities and is assigned by Flickr to all geotagged images. Furthermore, in order to retrieve only photos taken within the last 24 hours, the *min/max_date_taken* parameters of the *flickr.photos.search* endpoint are used. These parameters operate on Flickr’s ‘taken’ date field which is extracted, if available, from the image’s Exif metadata. However, the value of this field is not always accurate as explained in Flickr API’s documentation.
+In order to collect images the *flickr.photos.search* endpoint was used. For determining the geographical coverage of the query the *woe_id* parameter was used. This parameter allows geographical queries based on a WOEID (Where on Earth Identifier), a 32-bit identifier that uniquely identifies spatial entities and is assigned by Flickr to all geotagged images. Furthermore, in order to retrieve only photos taken within the last 24 hours, the *min/max_date_taken* parameters are used, which operate on Flickr’s ‘taken’ date field. It should be noted that the value of this field is not always accurate as explained in Flickr API’s documentation.
  
 An idiosyncrasy of the Flickr API that should be considered is that whenever the number of results for any given search query is larger than 4,000, only the pages corresponding to the first 4,000 results will contain unique images and subsequent pages will contain duplicates of the first 4,000 results. To tackle this issue, a recursive algorithm was implemented, that splits the query’s date taken interval in two or more and creates new queries that are submitted to the API. This mechanism offers robustness against data bursts.
 
@@ -76,15 +76,8 @@ Sky Localization (SL) refers to the detection of all pixels that depict sky in a
 
 The SL component is a computationally heavy processing step that can is suggested to be carried out on a GPU for improving the time performance of the module.
 
-### Sky localization using heuristic rules
-The second approach for sky localization is based on heuristic rules that aim at
-recognizing the sky part of the images. The algorithm is based on identifying
-whether the pixels meet certain criteria involving their color values and the size
-of color clusters they belong to. The output of the algorithm is a mask containing
-all pixels that capture the sky. It should be noted that the heuristic algorithm is far stricter than the
-FCN-based since sun and clouds are not considered part of the sky. Similarly to the
-FCN-based, the heuristic rule-based method was evaluated on the SUN database
-obtaining a mean precision of 82.45% and a mean recall of 59.22%.
+### Ratio Computation
+The Ration Computation module considers heuristic rules that aim at refining the sky part of the images. The algorithm uses certain criteria involving the pixel color values and the size of color clusters in order to refine the sky mask. The output of the algorithm is a mask containing all pixels that capture the sky and the mean R/G and G/B ratios of the sky part of the images. It should be noted that the heuristic algorithm is rather strict and does not consider clouds as part of the sky. 
 
 When an IA request is received, the IA service
 first sends a request to the concept detection (CD) component (step 1) which implements the concept detection
