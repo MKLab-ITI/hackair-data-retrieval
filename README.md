@@ -38,7 +38,7 @@ The collector implemented uses the *webcams.travel* API to collect data from Eur
 All the aforementioned collectors have two json file as input; the *mongosettings.json* and the *crawlsettings.json*.
 The first is common for all collectors and is used for defining the MongoDB parameters while the second slightly differs among the collectors and is used for defining the crawl settings.
 
-Below, we specify all parameters of both files and provide an example of the *crawlsettings.json*.
+Below, we specify all parameters of both files and provide 2 indicative examples.
 
 Parameter | Explanation
 :--- | :---
@@ -50,27 +50,30 @@ Parameter | Explanation
 `databaseName` | *string* value of the db name
 `collectionName` | *string* value of the collection name
 
-Parameter | Explanation
-:--- | :---:
-`mongoSettingsFile` | object | any *string* value
-`crawlStartString` | object | One of the following: *male*, *female*, *other*
-`crawlEndString` | object | any *integer* value
-`crawlIntervalSecs` | object | any *string* value
-`verbose` | object | M | any *string* value
+Example of *mongosettings.json*
 {  
    "mongo_settings":[  
       {  
-         "username":"hackairdb",
-         "password":"7gG&8<HAZ",
+         "username":"XXXXXX",
+         "password":"xxxxx",
          "host":"",
          "port":27017,
          "authMechanism":"SCRAM-SHA-1",
-         "databaseName":"hackair",
+         "databaseName":"test",
          "collectionName":"sensors"
       }
    ]
 }
 
+Parameter | Explanation
+:--- | :---
+`mongoSettingsFile` | MongoDB username *string* value
+`crawlStartString` | MongoDB password *string* value
+`crawlEndString` | *string* with the IP of the computer or the *localhost* value
+`crawlIntervalSecs` | *integer* value with the MongoDB port
+`verbose` | *string* value indicating the authentication mechanism, i.e. *MONGODB-CR*, *SCRAM-SHA-1* or *""* if none is used
+
+Example of *crawlsettings.json*
 ```
 {
 	"crawl_settings": [
