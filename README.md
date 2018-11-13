@@ -96,16 +96,27 @@ Example of *crawlsettings.json*
 
 
 ## Requirements - Dependencies
-The hackAIR DS API is implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html) with the adoption of [JAX-RS](http://docs.oracle.com/javaee/6/api/javax/ws/rs/package-summary.html) library. Additional dependencies are listed below:
-* [Apache Jena](https://jena.apache.org/): a free and open-source Java framework for building Semantic Web and Linked Data applications.
-* [SPIN API](http://topbraid.org/spin/api/): an open source Java API to enable the adoption of SPIN rules and the handling of the implemented rule-based reasoning mechanism. 
-* [json-simple](https://github.com/fangyidong/json-simple): a well-known java toolkit for parsing (encoding/decoding) JSON text.
+The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
+* [com.javadocmd » simplelatlng]: Simple Java implementation of common latitude and longitude calculations.
+* [org.jsoup » jsoup]: Java library for working with real-world HTML. It provides a very convenient API for extracting and manipulating data, using the best of DOM, CSS, and jquery-like methods. 
+* [com.google.code.gson » gson]: Java library for serializing and deserializing Java objects to (and from) JSON.
+* [org.mongodb » mongo-java-driver]: The MongoDB Java Driver uber-artifact, containing the legacy driver, the mongodb-driver, mongodb-driver-core, and bson
+* [junit » junit]: Unit is a unit testing framework for Java, created by Erich Gamma and Kent Beck.
+* [org.json » json]: It is a light-weight, language independent, data interchange format. See http://www.JSON.org/ The files in this package implement JSON encoders/decoders in Java. It also includes the capability to convert between JSON and XML, HTTP headers, Cookies, and CDL.
+* [org.apache.commons » commons-collections4]: It contains types that extend and augment the Java Collections Framework.
+* [org.jongo » jongo]: Query in Java as in Mongo shell
+* [org.apache.httpcomponents » httpclient]: Apache HttpComponents Client
 
 
 #### Instructions
 1. Install Java RE 7+ and Mongo 3.x in your computer.
 2. Clone the project **hackAIRDataCollectors** locally in your computer.
-3. Edit the mongosetting.jRun Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
+3. Edit the mongosetting.json and crawlsetting.json files.
+4. 
+https://bitbucket.org/lefman/hackair/src/master/hackAIRDataCollectors/src/main/java/gr/iti/mklab/flickr/FlickrCollector.java
+https://bitbucket.org/lefman/hackair/src/master/hackAIRDataCollectors/src/main/java/gr/iti/mklab/webcams/travel/WebcamsTravelCollectionJob.java
+https://bitbucket.org/lefman/hackair/src/master/hackAIRDataCollectors/src/main/java/gr/iti/mklab/openaq/OpenAQCollector.java 
+https://bitbucket.org/lefman/hackair/src/master/hackAIRDataCollectors/src/main/java/gr/iti/mklab/luftdaten/LuftDatenCollector.java 
 
 ●	Compiled jar and auxiliary files: [hackair_root]/hackair_modules/collectors/openaq
 How to run
@@ -160,74 +171,21 @@ Up to now, the hackAIR DS API offers the following web services through POST req
 ### JSON parameters
 Below, we specify all the mandatory and optional JSON parameters that are accepted in the POST request:
 
-Parameter | JSON Type | Mandatory(M) / Optional(O) | Accepted values
-:--- | :---: | :---: | :---
-`username` | object | M | any *string* value
-`gender` | object | O | One of the following: *male*, *female*, *other*
-`age` | object | M | any *integer* value
-`locationCity` | object | M | any *string* value
-`locationCountry` | object | M | any *string* value
-`isPregnant` | object | O | any *boolean* value
-`isSensitiveTo` | array | O | One or more of the following: *Asthma*, *Allergy*, *Cardiovascular*, *GeneralHealthProblem*
-`isOutdoorJobUser` | object | O | any *boolean* value
-`preferredActivities` | object | O | `preferredOutdoorActivities`
-`preferredOutdoorActivities` | array | O | One or more of the following: *picnic*, *running*, *walking*, *outdoor job*, *biking*, *playing in park*, *general activity*
-`airPollutant` | object | M | Both: `airPollutantName`, `airPollutantValue`
-`airPollutantName` | object | M | One of the following: *PM_AOD*, *PM10*, *PM2_5*, *PM_fused*
-`airPollutantValue` | object | M | any *double* value
-`preferredLanguageCode` | object | O | One of the following: *en*, *de*, *no*
-`relatedProfiles` | array | O | One or more JSON objects, each of which includes the aforementioned mandatory/optional fields.
 
 
 ### Example JSON object
 
-#### With primary and secondary profile description, in one single request
-
 ```
-{
-  "username": "Helen_Hall",
-  "age":"32", 
-  "locationCity": "Berlin",
-  "locationCountry": "Germany",
-  "isPregnant": false,
-  "isSensitiveTo": ["Asthma"],
-  "preferredLanguageCode": "de",
-  "airPollutant": {
-    "airPollutantName": "PM_fused",
-    "airPollutantValue": "3.5",
-  }
-  "preferredActivities": {
-    "preferredOutdoorActivities": ["picnic","running"]
-  },
-  "relatedProfiles": [{
-    "username": "Helen_Hall_secondary_profile",
-    "gender":"female",
-    "age":"1", 
-    "locationCity": "Berlin",
-    "locationCountry": "Germany",
-    "preferredLanguageCode": "de",
-    "airPollutant": {
-      "airPollutantName": "PM_fused",
-      "airPollutantValue": "3.5"
-    }
-  }]
-}
+
 ```
 
 
 ## Requirements - Dependencies
-The hackAIR DS API is implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html) with the adoption of [JAX-RS](http://docs.oracle.com/javaee/6/api/javax/ws/rs/package-summary.html) library. Additional dependencies are listed below:
-* [Apache Jena](https://jena.apache.org/): a free and open-source Java framework for building Semantic Web and Linked Data applications.
-* [SPIN API](http://topbraid.org/spin/api/): an open source Java API to enable the adoption of SPIN rules and the handling of the implemented rule-based reasoning mechanism. 
-* [GlassFish Server 4.1.1](http://www.oracle.com/technetwork/middleware/glassfish/overview/index.html): an open-source application server for the Java EE platform, utilised for handling HTTP queries to the RESTful API.
-* [json-simple](https://github.com/fangyidong/json-simple): a well-known java toolkit for parsing (encoding/decoding) JSON text.
-* [hackAIR Knowledge Base (KB) and Reasoning Framework](https://mklab.iti.gr/results/hackair-ontologies/): this regards the implemented ontological representation of the domain of discourse that handles both the semantic integration and reasoning of environmental and user-specific data, in order to provide recommendations to the hackAIR users, with respect to: (i) personal health and user preferences (activities, daily routine, etc.), and (ii) current AQ conditions of the location of interest. The hackAIR DS module utilises the sources of the hackAIR KB and reasoning framework as a background resource of information, from which it acquires the necessary semantic relations and information in order to support relevant recommendations’ provision to the users upon request for decision support. 
-
 
 ## Instructions
 1. Install Java EE 7 and GlassFish 4.1.1 in your computer.
 2. Clone the project locally in your computer.
-3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
+3. Run Tomcat server and deploy [hackAIR_project.war](hackAIR_project/target) application.
 4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
 
 
