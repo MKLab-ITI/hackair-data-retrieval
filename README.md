@@ -1,49 +1,76 @@
 # hackair-data-retrieval
 Contains components for air quality data collection, image collection from Flickr and web cams, and image analysis for sky detection and localization.
 
-## Air quality data collector from open sources
+## Data Collectors
+
+### Air quality data collector from open sources
 Two sources are involved: a) OpenAQ  platform and b) Luftdaten. The measurements from both sources are stored in a MongoDB.
 
-### OpenAQ
-
-#### Description
-<a href="https://openaq.org/" target="_blank">OpenAQ</a> is an open data platform that aggregates and shares air quality data from multiple official sources around the world. The data offered by the platform is of high quality as they mainly come from official, usually government-level organizations. The platform offers the data as they are received from their originating sources, without performing any kind of transformations. 
+#### OpenAQ
+<a href="https://openaq.org/" target="_blank">OpenAQ</a> is an open data platform that aggregates and shares air quality data from multiple official sources around the world. The data offered is of high quality as they come from official, usually government-level organizations. The platform offers the data without performing any kind of transformations. 
 
 The OpenAQ system checks each data source for updates information every 10 minutes. In most cases, the data source is the European Environmental Agency (EEA) but additional official-level data sources are included (e.g. DEFRA in the United Kingdom).  
 
 The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used, which provides the latest value of each available parameter (pollutant, i.e. NO2, PM10, PM2.5, SO2, CO, O3, BC) for every location in the system. The service receives as parameters, the pollutant and the region (which can be defined either as country name, city or by using coordinates)
 
-### Luftdaten
-
-#### Description
+#### Luftdaten
 <a href="http://luftdaten.info/" target="_blank">Luftdaten</a> is another source of air quality measurements. It offers data coming from  from low-cost sensors. The Luftdaten API can be accessed by following the instruction in https://github.com/opendata-stuttgart/meta/wiki/APIs.
 
 The data are organized by the OK Lab Stuttgart which is dedicated to the fine dust measurement through the Citizen Science project luftdaten.info. The measurements are provided by citizens that install self-built sensors on the outside their home. Then, Luftdaten.info generates a continuously updated particular matter map from the transmitted data.
 
-#### Instructions
-1. Install Java RE 7+ and Mongo 3.x in your computer.
-2. Clone the project locally in your computer.
-3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
-4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
 
-## Image collection from Flickr and web cams
+### Image collection from Flickr and web cams
 Two sources are involved: a) Flickr and b) Webcams-travel. The metadata from both sources are stored in a MongoDB.
 
-### Flickr collector
-
-#### Description
+#### Flickr collector
 The Flickr collector retrieves the URLs and necessary metadata of images captured and recently (within the last 24 hours) around the locations of interest. This information is retrieved by periodically calling the Flickr API. The metadata of each image is stored in a MongoDB and the URLs are used to download the images and store them until image analysis for supporting air quality estimation is performed.
 
 In order to collect images the *flickr.photos.search* endpoint was used. For determining the geographical coverage of the query the *woe_id* parameter was used. This parameter allows geographical queries based on a WOEID (Where on Earth Identifier), a 32-bit identifier that uniquely identifies spatial entities and is assigned by Flickr to all geotagged images. Furthermore, in order to retrieve only photos taken within the last 24 hours, the *min/max_date_taken* parameters are used, which operate on Flickr’s ‘taken’ date field. It should be noted that the value of this field is not always accurate as explained in Flickr API’s documentation.
  
 An idiosyncrasy of the Flickr API that should be considered is that whenever the number of results for any given search query is larger than 4,000, only the pages corresponding to the first 4,000 results will contain unique images and subsequent pages will contain duplicates of the first 4,000 results. To tackle this issue, a recursive algorithm was implemented, that splits the query’s date taken interval in two or more and creates new queries that are submitted to the API. This mechanism offers robustness against data bursts.
 
-### Webcams collector
+#### Webcams collector
+<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. 
 
-#### Description
-<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) *orderby* and b) *limit*. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
+The collector implemented uses the *webcams.travel* API to collect data from European webcams. The endpoint exploited is the */webcams/list/* and the following modifiers are used for filtering webcams: a) *continent* for specifying the continent where the web cams are located; b) *orderby* for enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams are returned every time; and c) *limit* for slicing the list of webcams given that the maximum number of results that can be returned per query is 50. 
 
-### JSON parameters
+### Data Collectors parameters
+All the aforementioned collectors have two json file as input; the *mongosettings.json* and the *crawlsettings.json*.
+The first is common for all collectors and is used for defining the MongoDB parameters while the second slightly differs among the collectors and is used for defining the crawl settings.
+
+Below, we specify all parameters of both files and provide an example of the *crawlsettings.json*.
+
+Parameter | Explanation
+:--- | :---:
+`username` | MongoDB username *string* value
+`password` | MongoDB password *string* value
+`host` | *string* with the IP of the computer or the *localhost* value
+`port` | *integer* value with the MongoDB port
+`authMechanism` | *string* value indicating the authentication mechanism, i.e. *MONGODB-CR*, *SCRAM-SHA-1* or *""* if none is used
+`databaseName` | *string* value of the db name
+`collectionName` | *string* value of the collection name
+
+Parameter | Explanation
+:--- | :---:
+`mongoSettingsFile` | object | any *string* value
+`crawlStartString` | object | One of the following: *male*, *female*, *other*
+`crawlEndString` | object | any *integer* value
+`crawlIntervalSecs` | object | any *string* value
+`verbose` | object | M | any *string* value
+{  
+   "mongo_settings":[  
+      {  
+         "username":"hackairdb",
+         "password":"7gG&8<HAZ",
+         "host":"",
+         "port":27017,
+         "authMechanism":"SCRAM-SHA-1",
+         "databaseName":"hackair",
+         "collectionName":"sensors"
+      }
+   ]
+}
+
 ```
 {
 	"crawl_settings": [
@@ -105,8 +132,6 @@ mongosettings.json
 }
 ```
 
-
-The involved web-services were created with the adoption of state-of-the-art technologies: RESTful communication, exchange of information on the basis of JSON objects, etc. The hackAIR DS API is publicly available and may run both as an independent service or as an integrated service on the hackAIR app/platform. 
 
 ## Image analysis for sky detection and localization
 Image Analysis (IA) involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. IA accepts a HTTP post request, carries out image processing, and returns a JSON with the results of the analysis. The service accepts as input either a set of local paths of images already downloaded (by image collectors Flickr or webcams) or a set of image URLs. 
