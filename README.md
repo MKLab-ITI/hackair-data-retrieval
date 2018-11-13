@@ -15,10 +15,16 @@ The OpenAQ system checks each data source for updates information every 10 minut
 The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used, which provides the latest value of each available parameter (pollutant, i.e. NO2, PM10, PM2.5, SO2, CO, O3, BC) for every location in the system. The service receives as parameters, the pollutant and the region (which can be defined either as country name, city or by using coordinates)
 
 #### Instructions
-1. Install Java EE 7 and GlassFish 4.1.1 in your computer.
+1. Install Java RE 7+ and Mongo 3.x in your computer.
 2. Clone the project locally in your computer.
 3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
 4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
+
+●	Compiled jar and auxiliary files: [hackair_root]/hackair_modules/collectors/openaq
+●	Currently running at REM (C:/hackair/openaq collector)
+How to run
+●	Run the openAQCollector.jar, with a crawl settings file as command line argument. Examples are provided in [hackair_root]/hackair_modules/collectors/openaq
+
 
 ### Luftdaten
 
@@ -28,7 +34,7 @@ The */latest* endpoint (https://docs.openaq.org/#api-Latest) of the API is used,
 The data are organized by the OK Lab Stuttgart which is dedicated to the fine dust measurement through the Citizen Science project luftdaten.info. The measurements are provided by citizens that install self-built sensors on the outside their home. Then, Luftdaten.info generates a continuously updated particular matter map from the transmitted data.
 
 #### Instructions
-1. Install Java EE 7 and GlassFish 4.1.1 in your computer.
+1. Install Java RE 7+ and Mongo 3.x in your computer.
 2. Clone the project locally in your computer.
 3. Run Glassfish server and deploy [hackAIR_project.war](hackAIR_project/target) application.
 4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
@@ -48,7 +54,7 @@ An idiosyncrasy of the Flickr API that should be considered is that whenever the
 ### Webcams collector
 
 #### Description
-<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a comprehensive and well-documented free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) *orderby* and b) *limit*. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
+<a href="https://developers.webcams.travel/" target="_blank">Webcams.travel</a> is a very large outdoor webcams directory that currently contains 64,475 landscape webcams worldwide. Webcams.travel provides access to webcam data through a free API. The provided API is RESTful, i.e. the request format is REST and the responses are formatted in JSON and is available only via <a href="https://www.mashape.com/" target="_blank"> Mashape</a>. The collector implemented uses the webcams.travel API to collect data from European webcams. The endpoint exploited  is the */webcams/list/* and apart from the continent modifier that narrows down the complete list of webcams to contain only webcams from specific continent, two other modifiers are used: a) *orderby* and b) *limit*. The orderby modifier has the purpose of enforcing an explicit ordering of the returned webcams in order to ensure as possible that the same webcams. The limit modifier is used to slice the list of webcams by limit and offset given that the maximum number of results that can be returned with a single query is 50. 
 
 
 ## Image analysis for sky detection and localization
@@ -62,25 +68,13 @@ The IA service consists of 3 components:
 ### Concept detection
 A 22-layer GoogLeNet network on 5055 concepts, which are a subset of the 12,988 ImageNet concepts. Then, this network is applied on the TRECVID SIN 2013 development dataset and the output of the last fully-connected layer (5055 dimensions) is used as the input space of SVM classifiers trained on the 346 TRECVID SIN concepts. The Concept Detection (CD) considered only the sky concept.
 
-In oSky detection was then applied on each image and the generated confidence scores were recorded in order to facilitate the selection of a decision threshold that provides a good trade-off between precision and recall. Based on this analysis, we opted for a 0.6 threshold (i.e. the sky concept is considered present if the confidence score is 0.6).
+The CD component returns a score that represent the algorithm’s confidence that the sky concept appears in each image. The threshold considered for deciding whether an image depicts sky or not is set to 0.8 because the goal is to lower the probability of sending non-sky-depicting images for further analysis.
 
 
-### Sky localization
-Sky localization refers to the detection of all pixels that depict sky in an image. We emply a fully convolutional network (FCN) approach, which draws on recent successes of deep neural networks for image
-classication (e.g. [19]) and transfer learning. The work in [22] was the rst to adapt deep classication architectures for
-image segmentation by using networks pre-trained for image classication and
-ne-tuned fully convolutionally on whole image inputs and per pixel ground truth
-labels. 
-To measure the performance of the approach specically on the task of sky
-localization, we used the SUN Database19 [43], a comprehensive collection of an-
-notated images covering a large variety of environmental scenes, places and the ob-
-jects within. More specically, we used the pre-trained (on the SIFT Flow dataset)
-FCN-16 model made available20 by [22], to predict the sky region of the 2,030 SUN
-images for which the polygons capturing the sky part are provided. We measured
-a pixel precision of 91.77% and a pixel recall of 94.25%. It should be noted, that
-we are interested mainly in the precision of the approach given that what is re-
-quired by the air quality estimation approach presented in section 6 is recognizing
-accurately even a small part of the sky inside the image.
+### Sky Localization
+Sky Localization (SL) refers to the detection of all pixels that depict sky in an image. We employ a fully convolutional network (FCN) approach, which draws on recent successes of deep neural networks for image classification and transfer learning.
+
+The SL component is a computationally heavy processing step that can is suggested to be carried out on a GPU for improving the time performance of the module.
 
 ### Sky localization using heuristic rules
 The second approach for sky localization is based on heuristic rules that aim at
@@ -97,12 +91,7 @@ first sends a request to the concept detection (CD) component (step 1) which imp
 framework. The CD component applies concept detection on each image of the request and returns
 a set of scores that represent the algorithm’s confidence that the sky concept appears in each image. When a response
 is received by the CD component, the IA service parses it to check which images are the most likely to depict sky based
-on the confidence scores calculated by the CD component. A relatively high (0.8) threshold is used to lower
-the probability of sending non-sky-depicting images for subsequent analysis. At step 3, the IA service sends a request
-to the sky localization (SL) component which implements the FCN-based sky localization framework.
-This is a computationally heavy processing step that is carried out on the GPU of the IA server. The response of the SL
-component is the sky mask of each image of the request. To minimize the time required for sending the masks to the
-IA service, a compression algorithm is first applied to reduce the size of the masks. Then, the IA service receives the
+on the confidence scores calculated by the CD component. Then, the IA service receives the
 response from the SL component (step 4) and sends a request to the ratio computation (RC) component. The
 RC component takes the sky masks computed by the FCN approach as input, refines them by applying the heuristic
 approach on top of them and computes the R/G and G/B ratios of each image (in case all checks of
