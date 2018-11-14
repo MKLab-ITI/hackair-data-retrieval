@@ -314,11 +314,11 @@ The **Sky Localization Service** is implemented in python. Additional dependenci
       - --> make runtest
       - It is necessary to set cuda related environmental variables as described <a href="http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#environment-setup" target="_blank">here</a>.
    3. Download and unzip caffe-master.zip as the siftflow model file and prototxt from github repository
-	 - Repeat step 2
+      - Repeat step 2
    4. make pycaffe 
-	 - Before executing this ensure that all the anaconda-related lines in the config file are uncommented. And also execute this line in caffe/python: "for req in $(cat requirements.txt); do pip install $req; done" 
+      - Before executing this ensure that all the anaconda-related lines in the config file are uncommented. And also execute this line in caffe/python: "for req in $(cat requirements.txt); do pip install $req; done" 
    
-The following environmental variables should be defined as well:
+      - The following environmental variables should be defined as well:
     export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
     export PATH=/usr/local/cuda-8.0/bin:$PATH
 	
