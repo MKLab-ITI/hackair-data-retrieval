@@ -95,7 +95,7 @@ Example of *crawlsettings.json*
 ```
 
 
-## Requirements - Dependencies
+### Requirements - Dependencies
 The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
 * [com.javadocmd » simplelatlng]: Simple Java implementation of common latitude and longitude calculations.
 * [org.jsoup » jsoup]: Java library for working with real-world HTML. It provides a very convenient API for extracting and manipulating data, using the best of DOM, CSS, and jquery-like methods. 
@@ -108,7 +108,7 @@ The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/j
 * [org.apache.httpcomponents » httpclient]: Apache HttpComponents Client
 
 
-#### Instructions
+### Instructions
 1. Install Java RE 7+ and Mongo 3.x in your computer.
 2. Clone the project **hackAIRDataCollectors** locally in your computer.
 3. Edit the mongosetting.json and crawlsetting.json files.
