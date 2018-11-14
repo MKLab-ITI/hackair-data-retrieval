@@ -1,0 +1,20 @@
+{  
+   "crawl_settings":[  
+      {  
+         "mongoSettingsFile":"mongosettings.json",
+         "downloadImages":true,
+         "deleteFailedDownloadsFromMongo":true,
+         "imageDownloadFolder":"/home/hackair/data/images/served_online/flickr/",
+         "crawlStartString":"",
+         "crawlEndString":"",
+         "crawlIntervalSecs":3600,
+         "crawlTimeSpanDays":1,
+         "verbose":true,
+         "imageAnalysisEndpoint":"https://services.hackair.eu:8083/ImageAnalysisService-v1/post/",
+         "flickrApiKey":"?????????????",
+		 "pastCrawl":false,
+         "queriesFile":"queries.csv",
+         "geotaggingFilesDir":""
+      }
+   ]
+}

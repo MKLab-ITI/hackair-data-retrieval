@@ -1,0 +1,11 @@
+{
+	"crawl_settings": [
+		{
+		"mongoSettingsFile": "mongosettings.json",
+		"crawlStartString": "",
+		"crawlEndString": "",
+		"crawlIntervalSecs": 10800,
+		"verbose": true
+		}
+	]
+}

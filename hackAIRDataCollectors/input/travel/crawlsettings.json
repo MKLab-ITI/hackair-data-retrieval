@@ -1,0 +1,23 @@
+{
+	"crawl_settings": [
+		{
+		"mongoSettingsFile": "mongosettings.json",
+	    "crawlStartString":"",
+        "crawlEndString":"",
+		"downloadImages": true,
+		"deleteFailedDownloadsFromMongo": true,
+		"imageDownloadFolder": "/home/hackair/data/images/served_online/",
+		"verbose": true,
+		"draxisEndpoint": "https://orchestrator.hackair.eu/action",
+		"imageAnalysisEndpoint": "https://services.hackair.eu:8083/ImageAnalysisService-v1/post/",
+		"imagesBaseURL": "https://services.hackair.eu:8083/images/",
+		"useCronTrigger": true,
+		"crawlIntervalSecs": 21600,
+		"cronString": "0 0 10,12,14,16 * * ?",
+		"numWebcamsDE": 800,
+		"numWebcamsNO": 800,
+		"numWebcamsGR": 200,
+		"numWebcamsBE": 200
+		}
+	]
+}

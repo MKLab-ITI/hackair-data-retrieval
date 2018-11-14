@@ -1,0 +1,14 @@
+{  
+   "mongo_settings":[  
+      {  
+         "username":"XXXXXX",
+         "password":"xxxxx",
+         "host":"",
+         "port":27017,
+         "authMechanism":"SCRAM-SHA-1",
+         "databaseName":"test",
+         "collectionName":"images"
+      }
+    ]
+}
+
