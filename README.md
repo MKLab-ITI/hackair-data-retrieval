@@ -102,7 +102,7 @@ The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/j
 * [com.google.code.gson » gson]: Java library for serializing and deserializing Java objects to (and from) JSON.
 * [org.mongodb » mongo-java-driver]: The MongoDB Java Driver uber-artifact, containing the legacy driver, the mongodb-driver, mongodb-driver-core, and bson
 * [junit » junit]: Unit is a unit testing framework for Java, created by Erich Gamma and Kent Beck.
-* [org.json » json]: It is a light-weight, language independent, data interchange format. See http://www.JSON.org/ The files in this package implement JSON encoders/decoders in Java. It also includes the capability to convert between JSON and XML, HTTP headers, Cookies, and CDL.
+* [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
 * [org.apache.commons » commons-collections4]: It contains types that extend and augment the Java Collections Framework.
 * [org.jongo » jongo]: Query in Java as in Mongo shell
 * [org.apache.httpcomponents » httpclient]: Apache HttpComponents Client
@@ -117,7 +117,7 @@ The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/j
    - hackAIRDataCollectors/src/main/java/gr/iti/mklab/webcams/travel/WebcamsTravelCollectionJob.java
    - hackAIRDataCollectors/src/main/java/gr/iti/mklab/openaq/OpenAQCollector.java 
    - hackAIRDataCollectors/src/main/java/gr/iti/mklab/luftdaten/LuftDatenCollector.java 
-5. Compile  jar and auxiliary files: [hackair_root]/hackair_modules/collectors/openaq
+5. Compile jar files and create a jar file for each collector.
 6. Run the jar files with a crawl settings file as command line argument. 
 e.g.
 java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
@@ -184,7 +184,7 @@ Below, we specify all the mandatory and optional JSON parameters that are accept
 ## Requirements - Dependencies
 
 ## Instructions
-1. Install Java EE 7 and GlassFish 4.1.1 in your computer.
+1. Install Python Java EE 7 and GlassFish 4.1.1 in your computer.
 2. Clone the project locally in your computer.
 3. Run Tomcat server and deploy [hackAIR_project.war](hackAIR_project/target) application.
 4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
