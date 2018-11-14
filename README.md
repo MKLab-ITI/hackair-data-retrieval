@@ -120,7 +120,7 @@ The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/j
 5. Compile jar files and create a jar file for each collector.
 6. Run the jar files with a crawl settings file as command line argument. 
 e.g.
-java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
+> java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
 
 
 
