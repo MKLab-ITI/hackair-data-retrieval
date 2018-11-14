@@ -282,23 +282,35 @@ Sky Localization (SL) refers to the detection of all pixels that depict sky in a
 The SL component is a computationally heavy processing step that can is suggested to be carried out on a GPU for improving the time performance of the module.
 
 #### Requirements - Dependencies
-The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
-* [asm » asm]: ASM, a very small and fast Java bytecode manipulation framework.
-* [com.sun.jersey » jersey-bundle]: A bundle containing code of all jar-based modules that provide JAX-RS and Jersey-related features. 
-* [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
-* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions (aka Streaming API), implementation for JSON.
-* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson: works on core streaming API.
-* [javax.servlet » servlet-api]: Java Servlet API.
-
+The **Sky Localization Service** is implemented in python. Additional dependencies are listed below:
+* [requests]: Requests packages allow to send HTTP/1.1 requests.
+* [numpy]: Fundamental package for scientific computing with Python. 
+* [json]: It exposes an API familiar to users of the standard library marshal and pickle modules. .
+* [urllib2]: Used for fetching URLs.
+* [bottle]: Bottle is a fast, simple and lightweight WSGI micro web-framework.
 
 #### Instructions
-1. Install python 2.x, and Tomcat 8.x in your computer.
-2. Clone the project **ImageAnalysisService** locally in your computer.
-3. Run the main functions for each collector (i.e. Flickr, Web cams, OpenAQ and Luftdaten respectively)
-5. Compile jar files and create a jar file for each collector.
-6. Run the jar files with a crawl settings file as command line argument. 
-e.g.
-> java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
+1. Install python 2.x, tensorflow-gpy in your computer. For tensorflow-gpu installation instructions see <a href="https://www.tensorflow.org/install/pip" target="_blank">here</a>. It is recommended to create a virtual environment.
+2. Activate a tensorflow environment (if aplicable). Depends on the installation method (e.g. “source activate tensorflow”)
+3. Clone the folder **sky_detection** locally in your computer.
+   - Main class: 'sky_detection/TF_detection_service.py'
+   - Model files: 'sky_detection/best models'
+4. Adjust paths at the beginning of *TF_detection_service.py* (models_path, imagesDir)
+5. Run service for Ubuntu:
+> nohup python TF_detection_service.py > detection_log.txt 2>&1
+This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
+6. Service endpoint (post): _{BASE_URL}/ConceptDetection/post
+7. Sample body of POST call: 
+Example of *ia_settings.json*
+```
+{  
+   "images":[  
+      {"path":"flickr/2018-02-04/00000.jpg"},
+      {"path":"flickr/2018-02-04/11111.jpg"}
+   ]
+}
+```
+
 
 This service uses internally the above two services (2.1 and 2.2).
 Details
