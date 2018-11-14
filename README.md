@@ -126,7 +126,16 @@ e.g.
 
 
 ## Image analysis for sky detection and localization
-Image Analysis (IA) involves all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. IA accepts a HTTP post request, carries out image processing, and returns a JSON with the results of the analysis. The service accepts as input either a set of local paths of images already downloaded (by image collectors Flickr or webcams) or a set of image URLs. 
+Image Analysis (IA) service coordinates all the operations required for the extraction of Red/Green (R/G) and Green/Blue (G/B) ratios from sky-depicting images. It accepts a HTTP post request, carries out image processing, and returns a JSON with the results of the analysis. The service accepts as input either a set of local paths of images already downloaded (by image collectors Flickr or webcams) or a set of image URLs. 
+
+The pipeline of the IA service is the following: 
+ - IA receives an HTTP post request
+ - IA sends a request to the concept detection (CD) service
+ - IA receives the CD response that indicates the images that most likely depict sky
+ - IA sends a request to the sky localization (SL) service
+ - IA receives the SL response that provides a mask with the sky part of the image
+ - IA calls the ratio computation (RC) component that computes the R/G and G/B ratios of the image
+ - IA combines the results of all previous steps to synthesize its response
 
 The IA service consists of 3 components:
  - concept detection
@@ -147,10 +156,7 @@ The SL component is a computationally heavy processing step that can is suggeste
 ### Ratio Computation
 The Ration Computation module considers heuristic rules that aim at refining the sky part of the images. The algorithm uses certain criteria involving the pixel color values and the size of color clusters in order to refine the sky mask. The output of the algorithm is a mask containing all pixels that capture the sky and the mean R/G and G/B ratios of the sky part of the images. It should be noted that the heuristic algorithm is rather strict and does not consider clouds as part of the sky. 
 
-When an IA request is received, the IA service first sends a request to the concept detection (CD) component (step 1) which implements the concept detection framework. The CD component applies concept detection on each image of the request and returns a set of scores that represent the algorithm’s confidence that the sky concept appears in each image. When a response is received by the CD component, the IA service parses it to check which images are the most likely to depict sky based on the confidence scores calculated by the CD component. Then, the IA service receives the response from the SL component (step 4) and sends a request to the ratio computation (RC) component. The RC component takes the sky masks computed by the FCN approach as input, refines them by applying the heuristic
-approach on top of them and computes the R/G and G/B ratios of each image (in case all checks of
-the heuristic approach are successfully passed). Finally, the IA service parses the response of the RC component (step
-6) and combines the results of all processing steps to synthesize the IA response.
+
 
 
 nohup python TF_detection_service.py > detection_log.txt 2>&1
