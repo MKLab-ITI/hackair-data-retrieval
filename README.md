@@ -256,7 +256,7 @@ The **Concept detection Service** is implemented in python. Additional dependenc
 * [bottle]: Bottle is a fast, simple and lightweight WSGI micro web-framework.
 
 #### Instructions
-1. Install python 2.x, tensorflow-gpy in your computer. For tensorflow-gpu installation instructions see <a href="https://www.tensorflow.org/install/pip" target="_blank">here</a>. It is recommended to create a virtual environment.
+1. Install python 2.x, and tensorflow-gpy in your computer. For tensorflow-gpu installation instructions see <a href="https://www.tensorflow.org/install/pip" target="_blank">here</a>. It is recommended to create a virtual environment.
 2. Activate a tensorflow environment (if aplicable). Depends on the installation method (e.g. “source activate tensorflow”)
 3. Clone the folder **sky_detection** locally in your computer.
    - Main class: 'sky_detection/TF_detection_service.py'
@@ -265,7 +265,7 @@ The **Concept detection Service** is implemented in python. Additional dependenc
 5. Run service for Ubuntu:
 > nohup python TF_detection_service.py > detection_log.txt 2>&1
 This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
-6. Service endpoint (post): _{BASE_URL}/ConceptDetection/post
+6. Service endpoint (post): _{BASE_URL}:8083/ConceptDetection/post
 7. Sample body of POST call: 
 Example of *ia_settings.json*
 ```
@@ -284,23 +284,49 @@ The SL component is a computationally heavy processing step that can is suggeste
 
 #### Requirements - Dependencies
 The **Sky Localization Service** is implemented in python. Additional dependencies are listed below:
-* [requests]: Requests packages allow to send HTTP/1.1 requests.
-* [numpy]: Fundamental package for scientific computing with Python. 
 * [json]: It exposes an API familiar to users of the standard library marshal and pickle modules. .
 * [urllib2]: Used for fetching URLs.
 * [bottle]: Bottle is a fast, simple and lightweight WSGI micro web-framework.
 
+
 #### Instructions
-1. Install python 2.x, tensorflow-gpy in your computer. For tensorflow-gpu installation instructions see <a href="https://www.tensorflow.org/install/pip" target="_blank">here</a>. It is recommended to create a virtual environment.
-2. Activate a tensorflow environment (if aplicable). Depends on the installation method (e.g. “source activate tensorflow”)
-3. Clone the folder **sky_detection** locally in your computer.
-   - Main class: 'sky_detection/TF_detection_service.py'
-   - Model files: 'sky_detection/best models'
-4. Adjust paths at the beginning of *TF_detection_service.py* (models_path, imagesDir)
+1. Install python 2.x, and caffe in your computer. 
+2. Clone the folder **sky_localization** locally in your computer.
+   - Main class: 'sky_localization/REST_service_FCN_lef_remote.py'
+3. Caffe installation steps:
+   a. Install latest available caffe version according to official <a href = "http://caffe.berkeleyvision.org/install_apt.html" target="_blank"> instructions  </a>, i.e.:
+	 - sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+	 - sudo apt-get install --no-install-recommends libboost-all-dev
+	 - sudo apt-get install libatlas-base-dev (** "sudo apt-get install libopenblas-dev" is also required for caffe_future!)
+	 - install python via <a href="https://www.anaconda.com/download/#linux" target="_blank">Anaconda</a> as suggested in the <a href="https://docs.anaconda.com/anaconda/install/linux" target="_blank">instructions</a> 
+   b. Compile caffe according to the instructions found <a href="http://caffe.berkeleyvision.org/installation.html#compilation" target="_blank">here</a>: Make nessesary changes in makefile for anaconda python (** it is probably good to call make clean first!!!)
+	 - cp Makefile.config.example Makefile.config
+	 - make all
+	 - solve hdf5 problem by trying <a href="https://gist.github.com/wangruohui/679b05fcd1466bb0937f#fix-hdf5-naming-problem" target="_blank">this</a>
+	 - Append /usr/include/hdf5/serial/ to INCLUDE_DIRS at line 85 in Makefile.config. (** This worked for both the older and the latest version of caffe! Yey!)
+		--- INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include
+		+++ INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/include/hdf5/serial/
+		--- LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib
+		+++ LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu/hdf5/serial
+
+	 - --> make test
+	 - --> make runtest
+    It is necessary to set cuda related environmental variables as described <a href="http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#environment-setup" target="_blank">here</a> 
+   c. Download and unzip caffe-master.zip as the siftflow model file and prototxt from github repository
+	- Repeat step 2
+   d. make pycaffe 
+   ** Before executing this ensure that all the anaconda-related lines in the config file are uncommented. And also execute this line in caffe/python: "for req in $(cat requirements.txt); do pip install $req; done" 
+   
+The following environmental variables should be defined as well:
+    export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
+    export PATH=/usr/local/cuda-8.0/bin:$PATH
+	
+
+4. Adjust paths at the beginning of *REST_service_FCN_lef_remote.py* (modelFile, protoTxt, imagesRootDir) and in the auxiliary file *inferFCN.py* (caffe_root_python)
 5. Run service for Ubuntu:
-> nohup python TF_detection_service.py > detection_log.txt 2>&1
+> nohup python REST_service_FCN_lef_remote.py > fcn_log.txt 2>&1
 This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
-6. Service endpoint (post): _{BASE_URL}/ConceptDetection/post
+6. Service endpoint (post): _{BASE_URL}:8084/SkyLocalizationFCN/post
 7. Sample body of POST call: 
 Example of *ia_settings.json*
 ```
@@ -311,20 +337,6 @@ Example of *ia_settings.json*
    ]
 }
 ```
-
-
-This service uses internally the above two services (2.1 and 2.2).
-Details
-●	Main class: FCN_localization_service.py
-●	Endpoint (post): _{BASE_URL}/SkyLocalizationFCN/post
-●	Sample call: {"images":[{"path":"flickr/2018-02-04/25210632307.jpg"}]}
-
-How to set up
-●	Install caffe (actually the older version found in caffe_future.zip) according to the detailed instructions given in “FCN_installation_instructions_lef.txt”
-●	Adjust paths FCN_localization_service.py (modelFile, protoTxt, imagesRootDir) and in the auxiliary file inferFCN.py (caffe_root_python)
-●	Run the service (use python 2  ): “cd FCN, nohup python REST_service_FCN_lef_remote.py > fcn_log.txt 2>&1” This command redirects stdout and stderr to a log file. It also allows you to close the terminal and leave the process running
-
-
 
 ### Ratio Computation
 The Ration Computation module considers heuristic rules that aim at refining the sky part of the images. The algorithm uses certain criteria involving the pixel color values and the size of color clusters in order to refine the sky mask. The output of the algorithm is a mask containing all pixels that capture the sky and the mean R/G and G/B ratios of the sky part of the images. It should be noted that the heuristic algorithm is rather strict and does not consider clouds as part of the sky. 
