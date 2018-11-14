@@ -1,6 +1,7 @@
 # hackair-data-retrieval
 Contains components for air quality data collection, image collection from Flickr and web cams, and image analysis for sky detection and localization.
 
+
 ## Data Collectors
 
 ### Air quality data collector from open sources
@@ -246,38 +247,34 @@ The CD component returns a score that represent the algorithm’s confidence tha
 
 
 #### Requirements - Dependencies
-The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
-* [asm » asm]: ASM, a very small and fast Java bytecode manipulation framework.
-* [com.sun.jersey » jersey-bundle]: A bundle containing code of all jar-based modules that provide JAX-RS and Jersey-related features. 
-* [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
-* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions (aka Streaming API), implementation for JSON.
-* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson: works on core streaming API.
-* [javax.servlet » servlet-api]: Java Servlet API.
-
+The **Concept detection Service** is implemented in python. Additional dependencies are listed below:
+* [requests]: Requests packages allow to send HTTP/1.1 requests.
+* [numpy]: Fundamental package for scientific computing with Python. 
+* [json]: It exposes an API familiar to users of the standard library marshal and pickle modules. .
+* [urllib2]: Used for fetching URLs.
+* [bottle]: Bottle is a fast, simple and lightweight WSGI micro web-framework.
 
 #### Instructions
-1. Install Java RE 7+, Mongo 3.x and Tomcat 8.x in your computer.
-2. Clone the project **ImageAnalysisService** locally in your computer.
-3. Run the main functions for each collector (i.e. Flickr, Web cams, OpenAQ and Luftdaten respectively)
-5. Compile jar files and create a jar file for each collector.
-6. Run the jar files with a crawl settings file as command line argument. 
-e.g.
-> java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
-
-This service uses internally the above two services (2.1 and 2.2).
-Details
-●	Source code: https://bitbucket.org/lefman/hackair/src/master/ImageAnalysisService/ 
-●	Main class: ImageAnalysisService.java 
-●	Compiled war location: [hackair_root]/modules/services/IA_service
-●	Currently running at REM (C:\Program Files\Apache Software Foundation\Tomcat 8.5\webapps\ImageAnalysisService-v1)
-●	Endpoint (post): https://services.hackair.eu:8083/ImageAnalysisService-v1/post
-●	Sample call: {"images":[{"path":"flickr/2018-02-04/25210632307.jpg"}]}
-How to set up
-●	Tomcat should be installed and running on the server  
-●	The war file should then be deployed
-●	After the war is deployed, the ia_settings.xml and the mongosettings.xml inside the WEB-INF directory should be edited. Example settings files are given in the compiled war location See the code for more details on the meaning of each settings parameter.
-
-
+1. Install python 2.x, tensorflow-gpy in your computer. For tensorflow-gpu installation instructions see <a href="https://www.tensorflow.org/install/pip" target="_blank">here</a>. It is recommended to create a virtual environment.
+2. Activate a tensorflow environment (if aplicable). Depends on the installation method (e.g. “source activate tensorflow”)
+3. Clone the folder **sky_detection** locally in your computer.
+   - Main class: 'sky_detection/TF_detection_service.py'
+   - Model files: 'sky_detection/best models'
+4. Adjust paths at the beginning of *TF_detection_service.py* (models_path, imagesDir)
+5. Run service for Ubuntu:
+> nohup python TF_detection_service.py > detection_log.txt 2>&1
+This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
+6. Service endpoint (post): https://host:port/ConceptDetection/post
+7. Sample body of POST call: 
+Example of *ia_settings.json*
+```
+{  
+   "images":[  
+      {"path":"flickr/2018-02-04/00000.jpg"},
+      {"path":"flickr/2018-02-04/11111.jpg"}
+   ]
+}
+```
 
 ### Sky Localization
 Sky Localization (SL) refers to the detection of all pixels that depict sky in an image. We employ a fully convolutional network (FCN) approach, which draws on recent successes of deep neural networks for image classification and transfer learning.
@@ -295,7 +292,7 @@ The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/j
 
 
 #### Instructions
-1. Install Java RE 7+, Mongo 3.x and Tomcat 8.x in your computer.
+1. Install python 2.x, and Tomcat 8.x in your computer.
 2. Clone the project **ImageAnalysisService** locally in your computer.
 3. Run the main functions for each collector (i.e. Flickr, Web cams, OpenAQ and Luftdaten respectively)
 5. Compile jar files and create a jar file for each collector.
@@ -305,16 +302,14 @@ e.g.
 
 This service uses internally the above two services (2.1 and 2.2).
 Details
-●	Source code: https://bitbucket.org/lefman/hackair/src/master/ImageAnalysisService/ 
-●	Main class: ImageAnalysisService.java 
-●	Compiled war location: [hackair_root]/modules/services/IA_service
-●	Currently running at REM (C:\Program Files\Apache Software Foundation\Tomcat 8.5\webapps\ImageAnalysisService-v1)
-●	Endpoint (post): https://services.hackair.eu:8083/ImageAnalysisService-v1/post
+●	Main class: FCN_localization_service.py
+●	Endpoint (post): http://160.40.50.236:8083/SkyLocalizationFCN/post
 ●	Sample call: {"images":[{"path":"flickr/2018-02-04/25210632307.jpg"}]}
+
 How to set up
-●	Tomcat should be installed and running on the server  
-●	The war file should then be deployed
-●	After the war is deployed, the ia_settings.xml and the mongosettings.xml inside the WEB-INF directory should be edited. Example settings files are given in the compiled war location See the code for more details on the meaning of each settings parameter.
+●	Install caffe (actually the older version found in caffe_future.zip) according to the detailed instructions given in “FCN_installation_instructions_lef.txt”
+●	Adjust paths FCN_localization_service.py (modelFile, protoTxt, imagesRootDir) and in the auxiliary file inferFCN.py (caffe_root_python)
+●	Run the service (use python 2  ): “cd FCN, nohup python REST_service_FCN_lef_remote.py > fcn_log.txt 2>&1” This command redirects stdout and stderr to a log file. It also allows you to close the terminal and leave the process running
 
 
 
