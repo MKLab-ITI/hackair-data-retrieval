@@ -217,8 +217,8 @@ Example of *ia_settings.json*
          "imagesRoot":"C:/data/images/online/",
          "imagesDownload":"download/",
          
-         "detectionEndpoint":"http://localhost:xxxx/ConceptDetection/post",
-         "localizationEndpoint":"http://localhost:yyyy/SkyLocalizationFCN/post",
+         "detectionEndpoint":"_{BASE_URL}/ConceptDetection/post",
+         "localizationEndpoint":"_{BASE_URL}/SkyLocalizationFCN/post",
          
          "processUrls":true,
          "outputMasks":true,
@@ -228,7 +228,7 @@ Example of *ia_settings.json*
 }
 ```
 
-6. Service endpoint (post): https://host:port/ImageAnalysisService-v1/post
+6. Service endpoint (post): _{BASE_URL}/ImageAnalysisService-v1/post
 7. Sample body of POST call: 
 Example of *ia_settings.json*
 ```
@@ -264,7 +264,7 @@ The **Concept detection Service** is implemented in python. Additional dependenc
 5. Run service for Ubuntu:
 > nohup python TF_detection_service.py > detection_log.txt 2>&1
 This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
-6. Service endpoint (post): https://host:port/ConceptDetection/post
+6. Service endpoint (post): _{BASE_URL}/ConceptDetection/post
 7. Sample body of POST call: 
 Example of *ia_settings.json*
 ```
@@ -303,7 +303,7 @@ e.g.
 This service uses internally the above two services (2.1 and 2.2).
 Details
 ●	Main class: FCN_localization_service.py
-●	Endpoint (post): http://160.40.50.236:8083/SkyLocalizationFCN/post
+●	Endpoint (post): _{BASE_URL}/SkyLocalizationFCN/post
 ●	Sample call: {"images":[{"path":"flickr/2018-02-04/25210632307.jpg"}]}
 
 How to set up
@@ -354,32 +354,6 @@ How to set up
 nohup python TF_detection_service.py > detection_log.txt 2>&1
 
 
-## Web-Services
-Up to now, the hackAIR DS API offers the following web services through POST requests:
-* _{BASE_URL}/hackAIR_project/api/dynamicPopulation_: performs the dynamic population of involved data (user profile and enviromnental data) in the hackAIR KB for further manipulation.
-* _{BASE_URL}/hackAIR_project/api/requestRecommendation_: performs a step-by-step process, i.e. (i) receives a JSON object in pre-defined format, through a POST request to the service of discourse, (ii) converts the JSON data to a hackAIR-compatible ontology-based problem description language for populating new instances (user profile details and environmental related data) in the knowledge base; (iii) triggers the hackAIR reasoning mechanism for handling the available data and rules and for inferencing new knowledge, i.e. provide relevant recommendations to the users. 
-
-
-### JSON parameters
-Below, we specify all the mandatory and optional JSON parameters that are accepted in the POST request:
-
-
-
-### Example JSON object
-
-```
-
-```
-
-
-## Requirements - Dependencies
-
-## Instructions
-1. Install Python Java EE 7 and GlassFish 4.1.1 in your computer.
-2. Clone the project locally in your computer.
-3. Run Tomcat server and deploy [hackAIR_project.war](hackAIR_project/target) application.
-4. Submit POST requests in relevant web-services, as described [here](https://github.com/MKLab-ITI/hackair-decision-support-api#web-services)
-
 
 ## Citation
 E. Spyromitros-Xioufs, A. Moumtzidou, S. Papadopoulos, S. Vrochidis, Y. Kompatsiaris, A. K. Georgoulias, G. Alexandri, K. Kourtidis, “Towards improved air quality monitoring using publicly available sky images”, In Multimedia Technologies for Environmental & Biodiversity Informatics, 2018. 
@@ -391,6 +365,3 @@ For further details, please contact Anastasia Moumtzidou (moumtzid@iti.gr)
 
 ## Credits
 The hackAIR Decision Support API was created by <a href="http://mklab.iti.gr/" target="_blank">MKLab group</a> under the scope of <a href="http://www.hackair.eu/" target="_blank">hackAIR</a> EU Horizon 2020 Project.
-
-
-
