@@ -295,12 +295,12 @@ The **Sky Localization Service** is implemented in python. Additional dependenci
 2. Clone the folder **sky_localization** locally in your computer.
    - Main class: 'sky_localization/REST_service_FCN_lef_remote.py'
 3. Caffe installation steps:
-   a. Install latest available caffe version according to official <a href = "http://caffe.berkeleyvision.org/install_apt.html" target="_blank"> instructions  </a>, i.e.:
+   1. Install latest available caffe version according to official <a href = "http://caffe.berkeleyvision.org/install_apt.html" target="_blank"> instructions  </a>, i.e.:
 	 - sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
 	 - sudo apt-get install --no-install-recommends libboost-all-dev
 	 - sudo apt-get install libatlas-base-dev (** "sudo apt-get install libopenblas-dev" is also required for caffe_future!)
 	 - install python via <a href="https://www.anaconda.com/download/#linux" target="_blank">Anaconda</a> as suggested in the <a href="https://docs.anaconda.com/anaconda/install/linux" target="_blank">instructions</a> 
-   b. Compile caffe according to the instructions found <a href="http://caffe.berkeleyvision.org/installation.html#compilation" target="_blank">here</a>: Make nessesary changes in makefile for anaconda python (** it is probably good to call make clean first!!!)
+   2. Compile caffe according to the instructions found <a href="http://caffe.berkeleyvision.org/installation.html#compilation" target="_blank">here</a>: Make nessesary changes in makefile for anaconda python (** it is probably good to call make clean first!!!)
 	 - cp Makefile.config.example Makefile.config
 	 - make all
 	 - solve hdf5 problem by trying <a href="https://gist.github.com/wangruohui/679b05fcd1466bb0937f#fix-hdf5-naming-problem" target="_blank">this</a>
