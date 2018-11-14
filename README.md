@@ -304,11 +304,16 @@ The **Sky Localization Service** is implemented in python. Additional dependenci
       - cp Makefile.config.example Makefile.config  
       - make all
       - solve hdf5 problem by trying <a href="https://gist.github.com/wangruohui/679b05fcd1466bb0937f#fix-hdf5-naming-problem" target="_blank">this</a>
-      - Append /usr/include/hdf5/serial/ to INCLUDE_DIRS at line 85 in Makefile.config. (** This worked for both the older and the latest version of caffe! Yey!)
+      - Append /usr/include/hdf5/serial/ to INCLUDE_DIRS at line 85 in Makefile.config.
+      
 		--- INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include
+		
 		+++ INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/include/hdf5/serial/
+		
 		--- LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib
+		
 		+++ LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu/hdf5/serial
+		
       - make test
       - make runtest
       - It is necessary to set cuda related environmental variables as described <a href="http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#environment-setup" target="_blank">here</a>.
