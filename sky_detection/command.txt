@@ -1,0 +1,1 @@
+nohup python TF_detection_service.py > detection_log.txt 2>&1
