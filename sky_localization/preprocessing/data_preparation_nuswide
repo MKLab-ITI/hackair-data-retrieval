@@ -1,0 +1,82 @@
+
+import csv
+import os
+from shutil import copyfile
+
+#create a gt file (image_path,label) for the sky concept!
+
+#annotation_file = '/media/espyromi/Backup/data/sky detection trecvid dataset/412_TRECVID108_SKY_GT.txt'
+#images_folder = '/media/espyromi/Backup/data/sky detection trecvid dataset/sky_images/'
+#new_folder = '/home/espyromi/Desktop/tensorflow-for-poets-2/tf_files/sky_photos/'
+
+
+# Read the images file and the gt file line by line, merge them and output in a new file
+# image_names_file = '/home/espyromi/Public/nuswide/full/image list/TrainImagelist.txt'
+# gt_labels_file = '/home/espyromi/Public/nuswide/full/ground truth/Labels_sky_Train.txt'
+# combined_file = '/home/espyromi/Public/nuswide/nuswide_sky_gt_train.txt'
+
+# f_names = open(image_names_file)
+# f_labels = open(gt_labels_file)
+# f_combined = open(combined_file, 'w')
+#
+# from itertools import izip
+#
+# counter = 0
+# with open(image_names_file) as textfile1, open(gt_labels_file) as textfile2:
+#     for x, y in izip(textfile1, textfile2):
+#         counter += 1
+#         #if counter % 100 == 0:
+#         #    break
+#         x = x.strip()
+#         y = y.strip()
+#         print("{0},{1}".format(x, y))
+#         f_combined.write("{0},{1}\n".format(x, y))
+#
+# f_combined.close()
+
+
+#parse the gt file to split the images in directories
+combined_file = '/home/espyromi/Public/nuswide/nuswide_scene_sky_gt_test.txt'
+target_images_folder = '/home/espyromi/Desktop/tensorflow-for-poets-2/tf_files/sky_nuswide_scene_test/'
+source_images_folder = '/home/espyromi/Public/nuswide/Flickr/'
+
+counter = 0
+with open(combined_file, 'rb') as csvfile:
+    gt_reader = csv.reader(csvfile, delimiter=',')
+    for row in gt_reader:
+        counter += 1
+        if counter % 100 == 0:
+            print 'Processsing row ' + str(counter)
+        image_class = '';
+        if row[1] == '0':
+            image_class = 'nosky'
+        elif row[1] == '1':
+            image_class = 'sky'
+        else:
+            raise ValueError(row[1] + ' not expected in annotation file (line:' + str(counter) + ')!')
+        #print 'Image class: ' + image_class
+
+        subpath = row[0].replace("\\", "/");
+        new_image_name = subpath.replace("/", "_")
+
+        src = source_images_folder + subpath
+        dst = target_images_folder + image_class + '/' + new_image_name
+        #print "Source " + src
+        #print "Dest " + dst
+        copyfile(src, dst)
+        # print ', '.join(row)
+
+
+# file_to_folder = dict()
+# counter = 0
+# folders = [fo for fo in os.listdir(images_folder)]
+#
+# for fo in folders:
+#    files = [fi for fi in os.listdir(images_folder+fo)]
+#    for fi in files:
+#        id = fi.split('.')[0]
+#        file_to_folder[id]=fo
+#        counter += 1
+#        if counter%1000==0:
+#            print 'Processsing file ' + str(counter)
+
