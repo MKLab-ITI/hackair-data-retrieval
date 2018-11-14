@@ -268,7 +268,6 @@ The **Concept detection Service** is implemented in python. Additional dependenc
 This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
 6. Service endpoint (post): _{BASE_URL}:8083/ConceptDetection/post
 7. Sample body of POST call: 
-Example of *ia_settings.json*
 ```
 {  
    "images":[  
@@ -332,9 +331,9 @@ The **Sky Localization Service** is implemented in python. Additional dependenci
 > nohup python REST_service_FCN_lef_remote.py > fcn_log.txt 2>&1
 
 This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
+
 6. Service endpoint (post): _{BASE_URL}:8084/SkyLocalizationFCN/post
 7. Sample body of POST call: 
-Example of *ia_settings.json*
 ```
 {  
    "images":[  
