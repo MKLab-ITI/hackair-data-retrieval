@@ -108,6 +108,7 @@ The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/j
 * [org.apache.httpcomponents » httpclient]: Apache HttpComponents Client
 
 
+
 ### Instructions
 1. Install Java RE 7+ and Mongo 3.x in your computer.
 2. Clone the project **hackAIRDataCollectors** locally in your computer.
@@ -142,10 +143,139 @@ The IA service consists of 3 components:
  - sky localization
  - ratio computation
 
+#### Requirements - Dependencies
+The **Image Analysis Service** is implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
+* [asm » asm]: ASM, a very small and fast Java bytecode manipulation framework.
+* [com.sun.jersey » jersey-bundle]: A bundle containing code of all jar-based modules that provide JAX-RS and Jersey-related features. 
+* [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
+* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions (aka Streaming API), implementation for JSON.
+* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson: works on core streaming API.
+* [javax.servlet » servlet-api]: Java Servlet API.
+The IA service uses internally the CD service and the SL service.
+
+#### Instructions
+1. Install Java RE 7+, Mongo 3.x and Tomcat 8.x in your computer.
+2. Clone the project **ImageAnalysisService** locally in your computer.
+3. Deploy a war file with main class *ImageAnalysisService.java*
+4. Compile jar files and create a jar file for each collector.
+5. Edit the *ia_settings.xml* and the *mongosettings.xml* that should reside inside the WEB-INF directory. Example settings files are under the main directory. Below, we specify all parameters of both files and provide 2 indicative examples.
+
+The parameters and what they represent in *mongosettings.json*.
+
+Parameter | Explanation
+:--- | :---
+`username` | MongoDB username *string* value
+`password` | MongoDB password *string* value
+`host` | *string* with the IP of the computer or the *localhost* value
+`port` | *integer* value with the MongoDB port
+`authMechanism` | *string* value indicating the authentication mechanism, i.e. *MONGODB-CR*, *SCRAM-SHA-1* or *""* if none is used
+`databaseName` | *string* value of the db name
+`collectionName` | *string* value of the collection name
+
+Example of *mongosettings.json*
+```
+{  
+   "mongo_settings":[  
+      {  
+         "username":"XXXXXX",
+         "password":"xxxxx",
+         "host":"",
+         "port":27017,
+         "authMechanism":"SCRAM-SHA-1",
+         "databaseName":"test",
+         "collectionName":"sensors"
+      }
+   ]
+}
+```
+
+The parameters and what they represent in *ia_settings.json*.
+
+Parameter | Explanation
+:--- | :---
+`skyDetectionVersion` | *string* value that should remain intact
+`skyThreshold` | *float* value indicating the threshold of concept detection
+`usableSkyThreshold` | *float* value indicating the threshold of ratio computation for sky detection
+`imagesRoot` | *string* path pointing to the directory where the images are located
+`imagesDownload` | *string* path pointing to the folder where the images to be downloaded are located
+`detectionEndpoint` | *string* URL of the Concept Detection service
+`localizationEndpoint` | *boostringlean* URL of the Sky Localization service
+`processUrls` | *boolean* value indicating whether URLs will be processes
+`outputMasks` | *boolean* value indicating whether masks will be kept
+`SSLValidationOff` | *boolean* value indicating whether SSL validation is off
+
+Example of *ia_settings.json*
+```
+{  
+   "ia_settings":[  
+      {  
+      	 "skyDetectionVersion":"new",
+         "skyThreshold":0.5,
+         "usableSkyThreshold":0.3,
+         
+         "imagesRoot":"C:/data/images/online/",
+         "imagesDownload":"download/",
+         
+         "detectionEndpoint":"http://localhost:xxxx/ConceptDetection/post",
+         "localizationEndpoint":"http://localhost:yyyy/SkyLocalizationFCN/post",
+         
+         "processUrls":true,
+         "outputMasks":true,
+         "SSLValidationOff":true
+      }
+   ]
+}
+```
+
+6. Endpoint (post): https://host:port/ImageAnalysisService-v1/post
+7. Sample POST call: 
+Example of *ia_settings.json*
+```
+{  
+   "images":[  
+      {"path":"flickr/2018-02-04/00000.jpg"},
+      {"path":"flickr/2018-02-04/11111.jpg"}
+   ]
+}
+
 ### Concept detection
 A 22-layer GoogLeNet network on 5055 concepts, which are a subset of the 12,988 ImageNet concepts. Then, this network is applied on the TRECVID SIN 2013 development dataset and the output of the last fully-connected layer (5055 dimensions) is used as the input space of SVM classifiers trained on the 346 TRECVID SIN concepts. The Concept Detection (CD) considered only the sky concept.
 
 The CD component returns a score that represent the algorithm’s confidence that the sky concept appears in each image. The threshold considered for deciding whether an image depicts sky or not is set to 0.8 because the goal is to lower the probability of sending non-sky-depicting images for further analysis.
+
+
+#### Requirements - Dependencies
+The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
+* [asm » asm]: ASM, a very small and fast Java bytecode manipulation framework.
+* [com.sun.jersey » jersey-bundle]: A bundle containing code of all jar-based modules that provide JAX-RS and Jersey-related features. 
+* [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
+* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions (aka Streaming API), implementation for JSON.
+* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson: works on core streaming API.
+* [javax.servlet » servlet-api]: Java Servlet API.
+
+
+#### Instructions
+1. Install Java RE 7+, Mongo 3.x and Tomcat 8.x in your computer.
+2. Clone the project **ImageAnalysisService** locally in your computer.
+3. Run the main functions for each collector (i.e. Flickr, Web cams, OpenAQ and Luftdaten respectively)
+5. Compile jar files and create a jar file for each collector.
+6. Run the jar files with a crawl settings file as command line argument. 
+e.g.
+> java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
+
+This service uses internally the above two services (2.1 and 2.2).
+Details
+●	Source code: https://bitbucket.org/lefman/hackair/src/master/ImageAnalysisService/ 
+●	Main class: ImageAnalysisService.java 
+●	Compiled war location: [hackair_root]/modules/services/IA_service
+●	Currently running at REM (C:\Program Files\Apache Software Foundation\Tomcat 8.5\webapps\ImageAnalysisService-v1)
+●	Endpoint (post): https://services.hackair.eu:8083/ImageAnalysisService-v1/post
+●	Sample call: {"images":[{"path":"flickr/2018-02-04/25210632307.jpg"}]}
+How to set up
+●	Tomcat should be installed and running on the server  
+●	The war file should then be deployed
+●	After the war is deployed, the ia_settings.xml and the mongosettings.xml inside the WEB-INF directory should be edited. Example settings files are given in the compiled war location See the code for more details on the meaning of each settings parameter.
+
 
 
 ### Sky Localization
@@ -153,20 +283,79 @@ Sky Localization (SL) refers to the detection of all pixels that depict sky in a
 
 The SL component is a computationally heavy processing step that can is suggested to be carried out on a GPU for improving the time performance of the module.
 
+#### Requirements - Dependencies
+The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
+* [asm » asm]: ASM, a very small and fast Java bytecode manipulation framework.
+* [com.sun.jersey » jersey-bundle]: A bundle containing code of all jar-based modules that provide JAX-RS and Jersey-related features. 
+* [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
+* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions (aka Streaming API), implementation for JSON.
+* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson: works on core streaming API.
+* [javax.servlet » servlet-api]: Java Servlet API.
+
+
+#### Instructions
+1. Install Java RE 7+, Mongo 3.x and Tomcat 8.x in your computer.
+2. Clone the project **ImageAnalysisService** locally in your computer.
+3. Run the main functions for each collector (i.e. Flickr, Web cams, OpenAQ and Luftdaten respectively)
+5. Compile jar files and create a jar file for each collector.
+6. Run the jar files with a crawl settings file as command line argument. 
+e.g.
+> java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
+
+This service uses internally the above two services (2.1 and 2.2).
+Details
+●	Source code: https://bitbucket.org/lefman/hackair/src/master/ImageAnalysisService/ 
+●	Main class: ImageAnalysisService.java 
+●	Compiled war location: [hackair_root]/modules/services/IA_service
+●	Currently running at REM (C:\Program Files\Apache Software Foundation\Tomcat 8.5\webapps\ImageAnalysisService-v1)
+●	Endpoint (post): https://services.hackair.eu:8083/ImageAnalysisService-v1/post
+●	Sample call: {"images":[{"path":"flickr/2018-02-04/25210632307.jpg"}]}
+How to set up
+●	Tomcat should be installed and running on the server  
+●	The war file should then be deployed
+●	After the war is deployed, the ia_settings.xml and the mongosettings.xml inside the WEB-INF directory should be edited. Example settings files are given in the compiled war location See the code for more details on the meaning of each settings parameter.
+
+
+
 ### Ratio Computation
 The Ration Computation module considers heuristic rules that aim at refining the sky part of the images. The algorithm uses certain criteria involving the pixel color values and the size of color clusters in order to refine the sky mask. The output of the algorithm is a mask containing all pixels that capture the sky and the mean R/G and G/B ratios of the sky part of the images. It should be noted that the heuristic algorithm is rather strict and does not consider clouds as part of the sky. 
 
 
+#### Requirements - Dependencies
+The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
+* [asm » asm]: ASM, a very small and fast Java bytecode manipulation framework.
+* [com.sun.jersey » jersey-bundle]: A bundle containing code of all jar-based modules that provide JAX-RS and Jersey-related features. 
+* [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
+* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions (aka Streaming API), implementation for JSON.
+* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson: works on core streaming API.
+* [javax.servlet » servlet-api]: Java Servlet API.
+
+
+#### Instructions
+1. Install Java RE 7+, Mongo 3.x and Tomcat 8.x in your computer.
+2. Clone the project **ImageAnalysisService** locally in your computer.
+3. Run the main functions for each collector (i.e. Flickr, Web cams, OpenAQ and Luftdaten respectively)
+5. Compile jar files and create a jar file for each collector.
+6. Run the jar files with a crawl settings file as command line argument. 
+e.g.
+> java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
+
+This service uses internally the above two services (2.1 and 2.2).
+Details
+●	Source code: https://bitbucket.org/lefman/hackair/src/master/ImageAnalysisService/ 
+●	Main class: ImageAnalysisService.java 
+●	Compiled war location: [hackair_root]/modules/services/IA_service
+●	Currently running at REM (C:\Program Files\Apache Software Foundation\Tomcat 8.5\webapps\ImageAnalysisService-v1)
+●	Endpoint (post): https://services.hackair.eu:8083/ImageAnalysisService-v1/post
+●	Sample call: {"images":[{"path":"flickr/2018-02-04/25210632307.jpg"}]}
+How to set up
+●	Tomcat should be installed and running on the server  
+●	The war file should then be deployed
+●	After the war is deployed, the ia_settings.xml and the mongosettings.xml inside the WEB-INF directory should be edited. Example settings files are given in the compiled war location See the code for more details on the meaning of each settings parameter.
+
 
 
 nohup python TF_detection_service.py > detection_log.txt 2>&1
-
-
-
-
-# hackAIR Decision Support API
-
-The involved web-services were created with the adoption of state-of-the-art technologies: RESTful communication, exchange of information on the basis of JSON objects, etc. The hackAIR DS API is publicly available and may run both as an independent service or as an integrated service on the hackAIR app/platform. 
 
 
 ## Web-Services
