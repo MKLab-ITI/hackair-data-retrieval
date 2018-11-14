@@ -112,15 +112,16 @@ The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/j
 1. Install Java RE 7+ and Mongo 3.x in your computer.
 2. Clone the project **hackAIRDataCollectors** locally in your computer.
 3. Edit the mongosetting.json and crawlsetting.json files.
-4. 
-https://bitbucket.org/lefman/hackair/src/master/hackAIRDataCollectors/src/main/java/gr/iti/mklab/flickr/FlickrCollector.java
-https://bitbucket.org/lefman/hackair/src/master/hackAIRDataCollectors/src/main/java/gr/iti/mklab/webcams/travel/WebcamsTravelCollectionJob.java
-https://bitbucket.org/lefman/hackair/src/master/hackAIRDataCollectors/src/main/java/gr/iti/mklab/openaq/OpenAQCollector.java 
-https://bitbucket.org/lefman/hackair/src/master/hackAIRDataCollectors/src/main/java/gr/iti/mklab/luftdaten/LuftDatenCollector.java 
+4. Run the main functions for each collector (i.e. Flickr, Web cams, OpenAQ and Luftdaten respectively)
+   - hackAIRDataCollectors/src/main/java/gr/iti/mklab/flickr/FlickrCollector.java
+   - hackAIRDataCollectors/src/main/java/gr/iti/mklab/webcams/travel/WebcamsTravelCollectionJob.java
+   - hackAIRDataCollectors/src/main/java/gr/iti/mklab/openaq/OpenAQCollector.java 
+   - hackAIRDataCollectors/src/main/java/gr/iti/mklab/luftdaten/LuftDatenCollector.java 
+5. Compile  jar and auxiliary files: [hackair_root]/hackair_modules/collectors/openaq
+6. Run the jar files with a crawl settings file as command line argument. 
+e.g.
+java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
 
-●	Compiled jar and auxiliary files: [hackair_root]/hackair_modules/collectors/openaq
-How to run
-●	Run the openAQCollector.jar, with a crawl settings file as command line argument. Examples are provided in [hackair_root]/hackair_modules/collectors/openaq
 
 
 
