@@ -147,9 +147,9 @@ The IA service consists of 3 components:
 The **Image Analysis Service** is implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
 * [asm » asm]: ASM, a very small and fast Java bytecode manipulation framework.
 * [com.sun.jersey » jersey-bundle]: A bundle containing code of all jar-based modules that provide JAX-RS and Jersey-related features. 
-* [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
-* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions (aka Streaming API), implementation for JSON.
-* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson: works on core streaming API.
+* [org.json » json]: It is a light-weight, language independent, data interchange format. It implements JSON encoders/decoders.
+* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions implementation for JSON.
+* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson that works on core streaming API.
 * [javax.servlet » servlet-api]: Java Servlet API.
 The IA service uses internally the CD service and the SL service.
 
@@ -227,8 +227,8 @@ Example of *ia_settings.json*
 }
 ```
 
-6. Endpoint (post): https://host:port/ImageAnalysisService-v1/post
-7. Sample POST call: 
+6. Service endpoint (post): https://host:port/ImageAnalysisService-v1/post
+7. Sample body of POST call: 
 Example of *ia_settings.json*
 ```
 {  
@@ -237,6 +237,7 @@ Example of *ia_settings.json*
       {"path":"flickr/2018-02-04/11111.jpg"}
    ]
 }
+```
 
 ### Concept detection
 A 22-layer GoogLeNet network on 5055 concepts, which are a subset of the 12,988 ImageNet concepts. Then, this network is applied on the TRECVID SIN 2013 development dataset and the output of the last fully-connected layer (5055 dimensions) is used as the input space of SVM classifiers trained on the 346 TRECVID SIN concepts. The Concept Detection (CD) considered only the sky concept.
