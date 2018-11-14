@@ -301,20 +301,16 @@ The **Sky Localization Service** is implemented in python. Additional dependenci
       - sudo apt-get install libatlas-base-dev (** "sudo apt-get install libopenblas-dev" is also required for caffe_future!)
       - install python via <a href="https://www.anaconda.com/download/#linux" target="_blank">Anaconda</a> as suggested in the <a href="https://docs.anaconda.com/anaconda/install/linux" target="_blank">instructions</a> 
    2. Compile caffe according to the instructions found <a href="http://caffe.berkeleyvision.org/installation.html#compilation" target="_blank">here</a>. Make nessesary changes in makefile for anaconda python (** it is probably good to call make clean first!!!)
-      cp Makefile.config.example Makefile.config
-      
-      make all
-      
-      solve hdf5 problem by trying <a href="https://gist.github.com/wangruohui/679b05fcd1466bb0937f#fix-hdf5-naming-problem" target="_blank">this</a>
-      
-      Append /usr/include/hdf5/serial/ to INCLUDE_DIRS at line 85 in Makefile.config. (** This worked for both the older and the latest version of caffe! Yey!)
+      - cp Makefile.config.example Makefile.config  
+      - make all
+      - solve hdf5 problem by trying <a href="https://gist.github.com/wangruohui/679b05fcd1466bb0937f#fix-hdf5-naming-problem" target="_blank">this</a>
+      - Append /usr/include/hdf5/serial/ to INCLUDE_DIRS at line 85 in Makefile.config. (** This worked for both the older and the latest version of caffe! Yey!)
 		--- INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include
 		+++ INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/include/hdf5/serial/
 		--- LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib
 		+++ LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu/hdf5/serial
-
-      - --> make test
-      - --> make runtest
+      - make test
+      - make runtest
       - It is necessary to set cuda related environmental variables as described <a href="http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#environment-setup" target="_blank">here</a>.
    3. Download and unzip caffe-master.zip as the siftflow model file and prototxt from github repository
       - Repeat step 2
