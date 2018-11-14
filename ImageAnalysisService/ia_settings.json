@@ -1,0 +1,19 @@
+{  
+   "ia_settings":[  
+      {  
+      	 "skyDetectionVersion":"new",
+         "skyThreshold":0.5,
+         "usableSkyThreshold":0.3,
+         
+         "imagesRoot":"C:/data/images/online/",
+         "imagesDownload":"download/",
+         
+         "detectionEndpoint":"http://host:portA/ConceptDetection/post",
+         "localizationEndpoint":"http://host:portB/SkyLocalizationFCN/post",
+         
+         "processUrls":true,
+         "outputMasks":true,
+         "SSLValidationOff":true
+      }
+   ]
+}
