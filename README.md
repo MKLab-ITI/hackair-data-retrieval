@@ -264,6 +264,7 @@ The **Concept detection Service** is implemented in python. Additional dependenc
 4. Adjust paths at the beginning of *TF_detection_service.py* (models_path, imagesDir)
 5. Run service for Ubuntu:
 > nohup python TF_detection_service.py > detection_log.txt 2>&1
+
 This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
 6. Service endpoint (post): _{BASE_URL}:8083/ConceptDetection/post
 7. Sample body of POST call: 
@@ -315,7 +316,7 @@ The **Sky Localization Service** is implemented in python. Additional dependenci
    c. Download and unzip caffe-master.zip as the siftflow model file and prototxt from github repository
 	- Repeat step 2
    d. make pycaffe 
-   ** Before executing this ensure that all the anaconda-related lines in the config file are uncommented. And also execute this line in caffe/python: "for req in $(cat requirements.txt); do pip install $req; done" 
+	- Before executing this ensure that all the anaconda-related lines in the config file are uncommented. And also execute this line in caffe/python: "for req in $(cat requirements.txt); do pip install $req; done" 
    
 The following environmental variables should be defined as well:
     export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
@@ -325,6 +326,7 @@ The following environmental variables should be defined as well:
 4. Adjust paths at the beginning of *REST_service_FCN_lef_remote.py* (modelFile, protoTxt, imagesRootDir) and in the auxiliary file *inferFCN.py* (caffe_root_python)
 5. Run service for Ubuntu:
 > nohup python REST_service_FCN_lef_remote.py > fcn_log.txt 2>&1
+
 This command redirects stdout and stderr to a log file and allows closing the terminal and leaving the process running.
 6. Service endpoint (post): _{BASE_URL}:8084/SkyLocalizationFCN/post
 7. Sample body of POST call: 
@@ -373,11 +375,6 @@ How to set up
 ●	Tomcat should be installed and running on the server  
 ●	The war file should then be deployed
 ●	After the war is deployed, the ia_settings.xml and the mongosettings.xml inside the WEB-INF directory should be edited. Example settings files are given in the compiled war location See the code for more details on the meaning of each settings parameter.
-
-
-
-nohup python TF_detection_service.py > detection_log.txt 2>&1
-
 
 
 ## Citation
