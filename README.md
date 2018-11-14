@@ -153,10 +153,11 @@ The **Image Analysis Service** is implemented in [Java EE 7](https://docs.oracle
 * [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions implementation for JSON.
 * [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson that works on core streaming API.
 * [javax.servlet » servlet-api]: Java Servlet API.
+* jar file of *ratio computation* component
 The IA service uses internally the CD service and the SL service.
 
 #### Instructions
-1. Install Java RE 7+, Mongo 3.x and Tomcat 8.x in your computer.
+1. Install Java EE 7.x, Mongo 3.x and Tomcat 8.x in your computer.
 2. Clone the project **ImageAnalysisService** locally in your computer.
 3. Deploy a war file with main class *ImageAnalysisService.java*
 4. Compile jar files and create a jar file for each collector.
@@ -345,41 +346,20 @@ This command redirects stdout and stderr to a log file and allows closing the te
 ```
 
 ### Ratio Computation
-The Ration Computation module considers heuristic rules that aim at refining the sky part of the images. The algorithm uses certain criteria involving the pixel color values and the size of color clusters in order to refine the sky mask. The output of the algorithm is a mask containing all pixels that capture the sky and the mean R/G and G/B ratios of the sky part of the images. It should be noted that the heuristic algorithm is rather strict and does not consider clouds as part of the sky. 
+The Ratio Computation component considers heuristic rules that aim at refining the sky part of the images. The algorithm uses certain criteria involving the pixel color values and the size of color clusters in order to refine the sky mask. The output of the algorithm is a mask containing all pixels that capture the sky and the mean R/G and G/B ratios of the sky part of the images. It should be noted that the heuristic algorithm is rather strict and does not consider clouds as part of the sky. 
 
 
 #### Requirements - Dependencies
-The **Data Collectors** are implemented in [Java EE 7](https://docs.oracle.com/javaee/7/index.html). Additional dependencies are listed below:
-* [asm » asm]: ASM, a very small and fast Java bytecode manipulation framework.
-* [com.sun.jersey » jersey-bundle]: A bundle containing code of all jar-based modules that provide JAX-RS and Jersey-related features. 
+The **Ratio Computation** component is implemented in [Java SE 7]. Additional dependencies are listed below:
 * [org.json » json]: It is a light-weight, language independent, data interchange format. The files in this package implement JSON encoders/decoders in Java.
-* [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions (aka Streaming API), implementation for JSON.
-* [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson: works on core streaming API.
-* [javax.servlet » servlet-api]: Java Servlet API.
-
+* [org.boofcv » boofcv-core]: Open source Java library for real-time computer vision and robotics applications.
+* [org.boofcv » boofcv-swing]: Open source Java library for real-time computer vision and robotics applications.
 
 #### Instructions
-1. Install Java RE 7+, Mongo 3.x and Tomcat 8.x in your computer.
-2. Clone the project **ImageAnalysisService** locally in your computer.
-3. Run the main functions for each collector (i.e. Flickr, Web cams, OpenAQ and Luftdaten respectively)
-5. Compile jar files and create a jar file for each collector.
-6. Run the jar files with a crawl settings file as command line argument. 
-e.g.
-> java -jar FlickrCollector.jar "crawlsettings.json" > log.txt 2>&1
-
-This service uses internally the above two services (2.1 and 2.2).
-Details
-●	Source code: https://bitbucket.org/lefman/hackair/src/master/ImageAnalysisService/ 
-●	Main class: ImageAnalysisService.java 
-●	Compiled war location: [hackair_root]/modules/services/IA_service
-●	Currently running at REM (C:\Program Files\Apache Software Foundation\Tomcat 8.5\webapps\ImageAnalysisService-v1)
-●	Endpoint (post): https://services.hackair.eu:8083/ImageAnalysisService-v1/post
-●	Sample call: {"images":[{"path":"flickr/2018-02-04/25210632307.jpg"}]}
-How to set up
-●	Tomcat should be installed and running on the server  
-●	The war file should then be deployed
-●	After the war is deployed, the ia_settings.xml and the mongosettings.xml inside the WEB-INF directory should be edited. Example settings files are given in the compiled war location See the code for more details on the meaning of each settings parameter.
-
+1. Install Java RE 7.x.
+2. Clone the project **SkyLocalizationHeuristic** locally in your computer.
+3. Run the main functio, i.e. *gr.mklab.SkyLocalizationAndRatios*
+4. Compile the jar file
 
 ## Citation
 E. Spyromitros-Xioufs, A. Moumtzidou, S. Papadopoulos, S. Vrochidis, Y. Kompatsiaris, A. K. Georgoulias, G. Alexandri, K. Kourtidis, “Towards improved air quality monitoring using publicly available sky images”, In Multimedia Technologies for Environmental & Biodiversity Informatics, 2018. 
