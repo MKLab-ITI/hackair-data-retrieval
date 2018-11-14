@@ -319,8 +319,8 @@ The **Sky Localization Service** is implemented in python. Additional dependenci
       - Before executing this ensure that all the anaconda-related lines in the config file are uncommented. And also execute this line in caffe/python: "for req in $(cat requirements.txt); do pip install $req; done" 
    
       - The following environmental variables should be defined as well:
-    export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
-    export PATH=/usr/local/cuda-8.0/bin:$PATH
+            export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
+	    export PATH=/usr/local/cuda-8.0/bin:$PATH
 	
 
 4. Adjust paths at the beginning of *REST_service_FCN_lef_remote.py* (modelFile, protoTxt, imagesRootDir) and in the auxiliary file *inferFCN.py* (caffe_root_python)
