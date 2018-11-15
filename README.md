@@ -372,4 +372,6 @@ For further details, please contact Anastasia Moumtzidou (moumtzid@iti.gr)
 ## Credits
 The hackAIR Decision Support API was created by <a href="http://mklab.iti.gr/" target="_blank">MKLab group</a> under the scope of <a href="http://www.hackair.eu/" target="_blank">hackAIR</a> EU Horizon 2020 Project.
 
-![mklab logo](https://avatars0.githubusercontent.com/u/4102668?s=200&v=4) Information Technologies Institute - Centre for Research and Technology Hellas &nbsp; &nbsp; &nbsp; <img src="./images/hackAir_logo_RGB.png" alt="hackAIR logo" width="125" height="133">
+ <img src="./images/mklabLogo.png" alt="hackAIR logo" width="125" height="133" />Information Technologies Institute - Centre for Research and Technology Hellas 
+<img src="./images/hackairLogo.png" alt="hackAIR logo" width="125" height="133" />Information Technologies Institute - Centre for Research and Technology Hellas 
+
