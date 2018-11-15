@@ -376,6 +376,7 @@ The hackAIR Decision Support API was created by <a href="http://mklab.iti.gr/" t
 Information Technologies Institute - Centre for Research and Technology Hellas 
 
 <img src="./images/mklabLogo.png" alt="hackAIR logo" width="125" height="133" /> |  <img src="./images/hackairLogo.png" alt="hackAIR logo" width="125" height="133" />
+:---: | :---:
 Information Technologies Institute - Centre for Research and Technology Hellas  |  hackAIR European Project
-:--- | :---
+
 
