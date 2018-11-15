@@ -370,13 +370,9 @@ For further details, please contact Anastasia Moumtzidou (moumtzid@iti.gr)
 
 
 ## Credits
-The hackAIR Decision Support API was created by <a href="http://mklab.iti.gr/" target="_blank">MKLab group</a> under the scope of <a href="http://www.hackair.eu/" target="_blank">hackAIR</a> EU Horizon 2020 Project.
+hackair Data Retrieval was created by <a href="http://mklab.iti.gr/" target="_blank">MKLab group (Information Technologies Institute - Centre for Research and Technology Hellas)</a> under the scope of <a href="http://www.hackair.eu/" target="_blank">hackAIR</a> EU Horizon 2020 Project.
 
+<img src="./images/mklabLogo.png" alt="hackAIR logo" width="125" height="133" />   <img src="./images/hackairLogo.png" alt="hackAIR logo" width="125" height="133" />
 
-Information Technologies Institute - Centre for Research and Technology Hellas 
-
-<img src="./images/mklabLogo.png" alt="hackAIR logo" width="125" height="133" /> |  <img src="./images/hackairLogo.png" alt="hackAIR logo" width="125" height="133" />
-:---: | :---:
-Information Technologies Institute - Centre for Research and Technology Hellas  |  hackAIR European Project
 
 
