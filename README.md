@@ -153,7 +153,8 @@ The **Image Analysis Service** is implemented in [Java EE 7](https://docs.oracle
 * [com.fasterxml.jackson.core » jackson-core]: Core Jackson processing abstractions implementation for JSON.
 * [com.fasterxml.jackson.core » jackson-databind]: General data-binding functionality for Jackson that works on core streaming API.
 * [javax.servlet » servlet-api]: Java Servlet API.
-* jar file of *ratio computation* component
+* jar file of *Ratio Computation* component
+
 The IA service uses internally the CD service and the SL service.
 
 #### Instructions
@@ -358,7 +359,7 @@ The **Ratio Computation** component is implemented in [Java SE 7]. Additional de
 #### Instructions
 1. Install Java RE 7.x.
 2. Clone the project **SkyLocalizationHeuristic** locally in your computer.
-3. Run the main functio, i.e. *gr.mklab.SkyLocalizationAndRatios*
+3. Run the main function, i.e. *gr.mklab.SkyLocalizationAndRatios*
 4. Compile the jar file
 
 ## Citation
