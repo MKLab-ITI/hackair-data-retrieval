@@ -3,21 +3,23 @@ from bottle import post, run, request
 from urllib2 import HTTPError
 
 import json
+import os
 import time
 import inferFCN as infer
 
 
 # -- The following variables should be correctly initialized before starting the service! --
 # paths to the model's file and prototxt
-modelFile = '/xxx/FCN/fcn-16s-sift-flow.caffemodel'
-protoTxt = '/xxx/FCN/fcn-16s-sift-flow-deploy.prototxt'
+modelFile = '/home/hackair/FCN/fcn-16s-sift-flow.caffemodel'
+protoTxt = '/home/hackair/FCN/fcn-16s-sift-flow-deploy.prototxt'
 # All sky localization requests contain relative image paths which are appended to the following
 # root path. The path may not be local to the server but a remote URL instead!
-imagesRootDir = 'https://host:port8083/images/'
+imagesRootDir = 'https://services.hackair.eu:8083/images/'
+imagesRootDir = '/home/hackair/data/images/served_online/' # local path
 # URL subpath for the service
 route = '/SkyLocalizationFCN/post'
 # list of IPs that the service will respond to
-authorised_ips = ['XXX.XXX.XXX.XXX', 'XXX.XXX.XXX.XXX'];
+authorised_ips = ['160.40.51.77', '160.40.50.236', '160.40.51.145', '160.40.50.230', '173.212.212.242', '127.0.0.1','localhost'];
 
 # this global variable holds the deep neural network in memory
 net = None
@@ -57,14 +59,30 @@ def index():
         # transform relative path to full path
         fullpath = imagesRootDir + image['path']
         print("Image: " + fullpath)
-        if infer.exists(fullpath):
+
+        img = None
+        
+        # Check whether file exists (either locally 
+        if fullpath.startswith('http'):
+            existsFlag = infer.exists(fullpath)
+        else:
+            existsFlag = os.path.isfile(fullpath)
+
+
+        if existsFlag:
             #image['found'] = True
+
             try:
                 # append a mask entry to the dictionary
                 #endcodedMaskString = infer.getSkyMask(fullpath, net)
                 #image['mask'] = endcodedMaskString
                 start_time = time.time()
-                img = infer.loadImageRemote(fullpath)
+
+                if fullpath.startswith('http'):
+                    img = loadImage(fullpath)
+                else:
+                    img = infer.loadImageRemote(fullpath)
+
                 this_time = time.time() - start_time
                 loading_time += this_time
                 print("Loading time: %s seconds " % this_time)

@@ -1,12 +1,13 @@
 import sys
 import time
 import requests
+import os
 import urllib #, cStringIO
 import numpy as np
 from io import BytesIO
 from PIL import Image
 
-caffe_root_python = '/home/FCN/caffe_future/python'
+caffe_root_python = '/home/hackair/FCN/caffe_future/python'
 sys.path.insert(0, caffe_root_python)
 import caffe
 
@@ -103,6 +104,11 @@ def runImageThroughNetwork(img, net):
 # load image, switch to BGR, subtract mean, and make dims C x H x W for Caffe
 def loadImage(imageFile):
   im = Image.open(imageFile)
+  total_size = im.size[0]*im.size[1];
+  if total_size > 500*500:
+    #image is too large to be processed, return null
+    #TODO downscale image to max num pixels (but then the mask will not be valid for the original image)
+    raise ValueError('Image is larger than expected!')
   in_ = np.array(im, dtype=np.float32)
   in_ = in_[:,:,::-1]
   in_ -= np.array((104.00698793,116.66876762,122.67891434))
@@ -187,7 +193,7 @@ def encodeMaskToString(out):
 
 # NOT USED FUNCTION FOLLOW!
 
-# caclulates RG ratio for sky region (NOT USED)
+# caclulates RG ration for sky region (NOT USED)
 def calculatingRGratioForSkyRegion(fullImageName, textFilePath):
   index = fullImageName.rfind('/') + 1
   imageName = fullImageName[index:]
